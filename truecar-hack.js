@@ -1,5 +1,7 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
 
+console.log("foo");
+
 Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
 
 testdata = {samples: [1,2,3]}
@@ -112,3 +114,32 @@ if (Meteor.isServer) {
     // Stuff to run at startup on server goes here.
   });
 }
+
+
+// Server routes
+
+//Router.configure({
+//  autoRender: false
+//});
+
+Router.map(function () {
+  this.route('serverFile', {
+    where: 'server',
+    path: '/files/:filename',
+
+    action: function () {
+      console.log("bar");
+      var filename = this.params.filename;
+
+      var samples = Samples.find({}, {sort: {created_at: 1}});
+      var l = [];
+      samples.forEach(function (s) {
+        l = l.concat(s.samples);
+      });
+
+      this.response.writeHead(200, {'Content-Type': 'text/html'});
+      this.response.end(JSON.stringify(l));
+    }
+  });
+});
+

@@ -9,6 +9,9 @@ Based on HTML5 accelerometer interface and Meteor web framework.
     # install meteor
     curl https://install.meteor.com | /bin/sh
     
+    # install metorite
+    npm install -g meteorite
+    
     # clone acc-meteor
     git clone git@github.com:nilnullzip/acc-meteor.git
     
