@@ -6,34 +6,39 @@ Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
 
 testdata = {samples: [1,2,3]}
 
-var user_filter = function () {
-  //
-  username = Session.get("username")
-  if (username == undefined) {
-    username = ""
-  }
-  console.log("username: " + username)
-  if (username=="ALL") {
-    filter = {}
-  } else {
-    filter = {username: username}      
-  }
-  return filter;
-}
 
 if (Meteor.isClient) {
+
+  var user_filter = function () {
+    username = Session.get("username")
+    if (username == undefined) {
+      username = ""
+    }
+    //console.log("username: " + username)
+    if (username=="ALL") {
+      filter = {}
+    } else {
+      filter = {username: username}      
+    }
+    return filter;
+  }
 
   // Live display of number of samples
 
   Template.nsamples.nsamples = function () {
-//    console.log ("foo: " + JSON.stringify(user_filter()))
     return Samples.find(user_filter()).count();
   };
 
   Template.nsamples.events({
     'click input#clear': function () {
-      console.log("Clearing all samples")
-      Samples.find(user_filter()).forEach(function(d){Samples.remove(d._id)});
+      var filter = user_filter();
+      console.log("Clearing samples for user: " + filter.username)
+      if (filter.username == undefined && !confirm("Really?")) {
+        console.log("Clearing cancelled.")
+        return;
+      }
+      Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
+      console.log("Cleared samples for user: " + filter.username)
     }
   });
 
@@ -167,12 +172,20 @@ Router.map(function () {
 
     action: function () {
       var username = this.params.username;
-      console.log("username: " + username);
-      console.log("n: " + this.params.n);
+      console.log("JSON: username: " + username);
+      console.log("JSON: n: " + this.params.n);
+      var filter = {}
 
-      filter = {username: username}
+      if (username != "ALL") {
+        filter = {username: username};
+      }
 
-      var samples = Samples.find(filter, {sort: {created_at: 1}});
+      var n = this.params.n;
+      if (n != undefined) {
+        n = Math.ceil(n/20);
+      }
+      console.log ("n: " + n)
+      var samples = Samples.find(filter, {sort: {created_at: 1}, limit: n});
       var l = [];
       samples.forEach(function (s) {
         l = l.concat(s.samples);
@@ -183,4 +196,3 @@ Router.map(function () {
     }
   });
 });
-

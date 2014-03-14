@@ -10,6 +10,11 @@
     <br>
     {{> radios}}
     <br>
+    <br>
+    To fetch JSON data:<br>
+    > http://truecar-hack.meteor.com/json/[username]?n=[seconds]
+    <br>
+    <br>
     <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
   </div>
 </body>
@@ -34,7 +39,9 @@
   <form action="">
     <input type="radio" name="display" value="live" checked>Live accelerometer data (only on mobile)<br>
     <input type="radio" name="display" value="20">Last 20 samples<br>
+<!--
     <input type="radio" name="display" value="json">All data in JSON format
+-->
   </form>
   <br>
 
