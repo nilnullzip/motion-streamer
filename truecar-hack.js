@@ -181,15 +181,22 @@ Router.map(function () {
       }
 
       var n = this.params.n;
+      var records = n
       if (n != undefined) {
-        n = Math.ceil(n/20);
+        records = Math.ceil(n/20);
       }
-      console.log ("n: " + n)
-      var samples = Samples.find(filter, {sort: {created_at: 1}, limit: n});
+      console.log ("records: " + records)
+      var samples = Samples.find(filter, {sort: {created_at: -1}, limit: records});
       var l = [];
       samples.forEach(function (s) {
-        l = l.concat(s.samples);
+        l = l.concat(s.samples.reverse());
       });
+
+      if (n != undefined) {
+        l = l.slice(0,n);
+      }
+
+      l.reverse()
 
       this.response.writeHead(200, {'Content-Type': 'text/html'});
       this.response.end(JSON.stringify(l));
