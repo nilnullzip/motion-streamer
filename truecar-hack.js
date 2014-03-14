@@ -6,18 +6,40 @@ Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
 
 testdata = {samples: [1,2,3]}
 
+var user_filter = function () {
+  //
+  username = Session.get("username")
+  if (username == undefined) {
+    username = ""
+  }
+  console.log("username: " + username)
+  if (username=="ALL") {
+    filter = {}
+  } else {
+    filter = {username: username}      
+  }
+  return filter;
+}
+
 if (Meteor.isClient) {
 
   // Live display of number of samples
 
   Template.nsamples.nsamples = function () {
-    return Samples.find().count();
+//    console.log ("foo: " + JSON.stringify(user_filter()))
+    return Samples.find(user_filter()).count();
   };
 
   Template.nsamples.events({
     'click input#clear': function () {
       console.log("Clearing all samples")
-      Samples.find().forEach(function(d){Samples.remove(d._id)});
+      Samples.find(user_filter()).forEach(function(d){Samples.remove(d._id)});
+    }
+  });
+
+  Template.username.events({
+    'keyup input#username': function () {
+      Session.set("username", $("#username").val());
     }
   });
 
@@ -25,7 +47,6 @@ if (Meteor.isClient) {
 
   Template.username.events({
     'click input#startstop': function () {
-//      Session.set("radio_value", $("input:radio[name=display]:checked").val())
       if ($("#startstop").val() == "Start capture") {
         $("#startstop").val("Stop capture")
       } else {
@@ -37,7 +58,7 @@ if (Meteor.isClient) {
   // JSON display
 
   Template.radios.samples_json = function(input){
-    var samples = Samples.find({}, {sort: {created_at: 1}});
+    var samples = Samples.find(user_filter(), {sort: {created_at: 1}});
     var l = [];
     samples.forEach(function (s) {
       l = l.concat(s.samples);
@@ -48,7 +69,7 @@ if (Meteor.isClient) {
   // Recent samples display
 
   Template.radios.recentsamples = function () {
-    var s = Samples.findOne({}, {sort: {created_at: -1}});
+    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
     if (s != null) {
       return _.map(s["samples"], JSON.stringify );
     } else {
@@ -149,7 +170,9 @@ Router.map(function () {
       console.log("username: " + username);
       console.log("n: " + this.params.n);
 
-      var samples = Samples.find({}, {sort: {created_at: 1}});
+      filter = {username: username}
+
+      var samples = Samples.find(filter, {sort: {created_at: 1}});
       var l = [];
       samples.forEach(function (s) {
         l = l.concat(s.samples);
