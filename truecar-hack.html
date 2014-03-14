@@ -5,6 +5,7 @@
 <body>
   <div id="maindiv">
     <h3>Collect accelerometer samples and save to MongoDB</h3>
+    {{> username}}
     {{> nsamples}}
     <br>
     {{> radios}}
@@ -12,6 +13,14 @@
     <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
   </div>
 </body>
+
+<template name="username">
+  <div>
+    Username: <input type="text" id="username" />
+    <input type="button" id="startstop" value="Start capture" />
+    <br/><br/>
+  </div>
+</template>
 
 <template name="nsamples">
   <div>

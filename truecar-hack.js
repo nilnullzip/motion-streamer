@@ -21,6 +21,19 @@ if (Meteor.isClient) {
     }
   });
 
+  // Username
+
+  Template.username.events({
+    'click input#startstop': function () {
+//      Session.set("radio_value", $("input:radio[name=display]:checked").val())
+      if ($("#startstop").val() == "Start capture") {
+        $("#startstop").val("Stop capture")
+      } else {
+        $("#startstop").val("Start capture")
+      }
+    }
+  });
+
   // JSON display
 
   Template.radios.samples_json = function(input){
@@ -69,6 +82,13 @@ if (Meteor.isClient) {
             
       window.ondevicemotion = function(e) {
 
+        // Inhibit saving
+
+        if ($("#startstop").val() == "Start capture") {
+          samples = [];
+          return;
+        }
+
         // Measure sample interval and siplay on page
 
         var t = Date.now();
@@ -101,7 +121,8 @@ if (Meteor.isClient) {
         samples.push(sample);
         if (samples.length > 20) {
           created_at = new Date().getTime();
-          Samples.insert({samples: samples, created_at: created_at});
+          username = $("#username").val();
+          Samples.insert({samples: samples, created_at: created_at, username: username});
           samples = [];
         }
       }
@@ -118,18 +139,15 @@ if (Meteor.isServer) {
 
 // Server routes
 
-//Router.configure({
-//  autoRender: false
-//});
-
 Router.map(function () {
-  this.route('serverFile', {
+  this.route('json', {
     where: 'server',
-    path: '/files/:filename',
+    path: '/json/:username',
 
     action: function () {
-      console.log("bar");
-      var filename = this.params.filename;
+      var username = this.params.username;
+      console.log("username: " + username);
+      console.log("n: " + this.params.n);
 
       var samples = Samples.find({}, {sort: {created_at: 1}});
       var l = [];
