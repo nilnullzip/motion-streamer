@@ -32,13 +32,13 @@ if (Meteor.isClient) {
   Template.nsamples.events({
     'click input#clear': function () {
       var filter = user_filter();
-      console.log("Clearing samples for user: " + filter.username)
+      console.log("Clearing samples for user: " + Session.get("username"))
       if (filter.username == undefined && !confirm("Really?")) {
         console.log("Clearing cancelled.")
         return;
       }
       Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
-      console.log("Cleared samples for user: " + filter.username)
+      console.log("Cleared samples for user: " + Session.get("username"))
     }
   });
 
