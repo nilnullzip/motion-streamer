@@ -1,5 +1,5 @@
 <head>
-  <title>Collect accelerometer samples.</title>
+  <title>Collect motion data.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -10,8 +10,8 @@
   <div class="container">
   <div id="maindiv" class="row" >
     <div class="span12">
-      <h3>Collect accelerometer samples</h3>
-      {{> username}}
+      <h3>Collect motion data</h3>
+      <span class="muted">{{> username}}</span>
       {{#if has_username}}
       {{> tabs}}
       <div class="tab-content">
@@ -22,7 +22,7 @@
           <br><br>
           {{> nsamples}}
           </br><br>
-          Recent samples:<br><br>
+          <span class="muted">Recent data:</span><br>
           {{#each recentsamples}}
             {{this}}<br>
           {{/each}}
@@ -34,7 +34,7 @@
           <br><br>
           {{> nsamples}}
           <br><br>
-          <div id="accxyz">This device does not have an accelerometer.</div>
+          <div id="accxyz">This device does support motion.</div>
           {{/if}}
         </div>
       </div>

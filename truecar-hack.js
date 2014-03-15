@@ -60,6 +60,12 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.body.rendered = function () {
+    if (window.DeviceMotionEvent == undefined) {
+      $("button#startstop").attr("disabled", true)
+    }
+  }
+
   $(window).bind('hashchange', function() {
     console.log("hashchange: " + location.hash);
     Session.set("tabs", location.hash);
