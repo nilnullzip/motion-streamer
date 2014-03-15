@@ -3,10 +3,10 @@
 </head>
 
 <body>
-  {{> body}}
 </body>
 
 <template name="body">
+  <div class="container">
   <div id="maindiv" class="row">
     <div class="col-xs-6">
       <h3>Collect accelerometer samples and save to MongoDB</h3>
@@ -16,17 +16,19 @@
         <div class="tab-pane" id="review">
           {{#if activetab "reviewtab"}}
           {{> nsamples}}
+          </br>
+          JSON data available 
+          <a href="/json/{{username}}">here</a>.
+          <br></br>
           Last 20 samples:<br>
           {{#each recentsamples}}
             {{this}}<br>
           {{/each}}
-          To fetch JSON data:<br>
-          > http://truecar-hack.meteor.com/json/[username]?n=[seconds]
           {{/if}}
         </div>
         <div class="tab-pane" id="collect">
           {{#if activetab "collecttab"}}
-          <input type="button" id="startstop" value="Start capture" />
+          <button type="button" id="startstop" class="btn btn-danger">Record</button>
           {{> nsamples}}
           measured sample interval: <span id="measured"></span> ms<br>
           API indicates sample interval: <span id="interval"></span> sec<br>
@@ -43,6 +45,7 @@
     <br>
     <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
     </div>
+  </div>
   </div>
 </template>
 
@@ -63,41 +66,16 @@
 <template name="nsamples">
   <div>
     {{nsamples}} seconds of sample data saved.
-    <input type="button" id="clear" value="Delete" />
+    <button type="button" id="clear" class="btn btn-danger">Delete</button>
 </div>
 </template>
 
-<template name="radios">
-  Show:<br>
-  <form action="">
-    <input type="radio" name="display" value="live" checked>Live accelerometer data (only on mobile)<br>
-    <input type="radio" name="display" value="20">Last 20 samples<br>
-<!--
-    <input type="radio" name="display" value="json">All data in JSON format
--->
-  </form>
-  <br>
-
-  {{#if radio_value "live"}}
-    measured sample interval: <span id="measured"></span> ms<br>
-    API indicates sample interval: <span id="interval"></span> sec<br>
-    <br>
-    acc x: <span id="accx"></span><br>
-    acc y: <span id="accy"></span><br>
-    acc z: <span id="accz"></span><br>
-    rot a: <span id="rota"></span><br>
-    rot b: <span id="rotb"></span><br>
-    rot c: <span id="rotc"></span><br>
-  {{/if}}
-
-  {{#if radio_value "20"}}
-    Last 20 samples:<br>
-    {{#each recentsamples}}
-      {{this}}<br>
-    {{/each}}
-  {{/if}}
-
-  {{#if radio_value "json"}}
-    {{samples_json}}
-  {{/if}}
+<template name="notFound">
+  <div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>Page not found!</h1>
+    </div>
+  </div>
+  </div>
 </template>

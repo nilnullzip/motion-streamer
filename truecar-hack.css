@@ -1,4 +1,6 @@
+
 body {
+    /*
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 200;
     margin: 50px 0;
@@ -11,11 +13,11 @@ body {
     user-select: none;
     */
 }
-
+/*
 #maindiv {
   margin:1em;
 }
-
+*/
 .inc {
   cursor: pointer;
 }

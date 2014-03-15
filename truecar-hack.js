@@ -1,11 +1,6 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
 
-console.log("foo");
-
 Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
-
-testdata = {samples: [1,2,3]}
-
 
 if (Meteor.isClient) {
 
@@ -28,44 +23,41 @@ if (Meteor.isClient) {
 //  });
 
   Template.body.activetab = function (t) {
-//    console.log("selected tab: " + $("#maintabs .active").text())
-//    return "bar" + $("#maintabs .active").text()
-//    console.log("selected tab: " + Session.get("tabs"))
     return t == Session.get("tabs");
   }
 
+  Template.body.username = function (t) {
+    return Session.get("username");
+  }
+
   Template.body.events({
-    'click input#startstop': function () {
-      if ($("#startstop").val() == "Start capture") {
-        $("#startstop").val("Stop capture")
+    'click button#startstop': function () {
+      if ($("#startstop").text() == "Record") {
+        $("#startstop").text("Stop")
       } else {
-        $("#startstop").val("Start capture")
+        $("#startstop").text("Record")
       }
     }
   });
 
   Template.tabs.rendered = function () {
     console.log("Template.tabs.rendered.")
-    // Detect selected tab
+
+    // Trigger when tab changes
+
     $('#maintabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
       console.log("BS: " + e.target.id);
       Session.set("tabs", e.target.id);
-      //e.target // activated tab
-      //e.relatedTarget // previous tab
     });
-    //$('#maintabs a[data-toggle="tab"]:first').tab("show");
+
+    // Initialize the tab
+
     if (Session.get("tabs")) {
       $('#maintabs #' + Session.get("tabs")).tab("show");
     } else {
       $('#maintabs a[data-toggle="tab"]:first').tab("show");
     }
   }
-
-  Template.tabs.events({
-    'click #maintabs a': function () {
-      console.log("tabs clicked");
-    }
-  });
  
   // Recent samples display
 
@@ -103,41 +95,6 @@ if (Meteor.isClient) {
     }
   });
 
-  // Username
-
-  Template.username.events({
-    'click input#startstop': function () {
-      if ($("#startstop").val() == "Start capture") {
-        $("#startstop").val("Stop capture")
-      } else {
-        $("#startstop").val("Start capture")
-      }
-    }
-  });
-
-  // JSON display
-
-  Template.radios.samples_json = function(input){
-    var samples = Samples.find(user_filter(), {sort: {created_at: 1}});
-    var l = [];
-    samples.forEach(function (s) {
-      l = l.concat(s.samples);
-    });
-    return JSON.stringify(l);
-  };
-
-  // Manage radio buttons
-
-  Template.radios.radio_value = function(input){
-    return Session.get("radio_value") == input;
-  };
-
-  Template.radios.events({
-    'click input': function () {
-      Session.set("radio_value", $("input:radio[name=display]:checked").val())
-    }
-  });
-
   // At startup set up device motion event handler.
 
   Meteor.startup(function () {
@@ -152,9 +109,9 @@ if (Meteor.isClient) {
             
       window.ondevicemotion = function(e) {
 
-        // Inhibit saving
+        // Only save when capture button is enabled
 
-        if ($("#startstop").val() != "Stop capture" || Session.get("tabs") != "collecttab") {
+        if ($("#startstop").text() != "Stop" || Session.get("tabs") != "collecttab") {
           samples = [];
           return;
         }
@@ -206,8 +163,17 @@ if (Meteor.isServer) {
   });
 }
 
-
 // Server routes
+
+Router.configure({
+  notFoundTemplate: 'notFound' // this will render
+});
+
+Router.map(function () {
+  this.route('body', {
+    path: '/'
+  });
+});
 
 Router.map(function () {
   this.route('json', {
