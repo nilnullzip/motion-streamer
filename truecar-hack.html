@@ -7,19 +7,19 @@
 
 <template name="body">
   <div class="container">
-  <div id="maindiv" class="row">
-    <div class="col-xs-6">
+  <div id="maindiv" class="row" style="margin:1em">
+    <div class="col-xs-4">
       <h3>Collect accelerometer samples and save to MongoDB</h3>
       {{> username}}
       {{> tabs}}
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
+          <button type="button" class="btn btn-primary" onClick="window.location.href='/json/{{username}}'">Download</button>
+          <button type="button" id="clear" class="btn btn-danger">Delete</button>
+          <br><br>
           {{> nsamples}}
-          </br>
-          JSON data available 
-          <a href="/json/{{username}}" target="_blank">here</a>.
-          <br></br>
+          </br><br>
           Last 20 samples:<br><br>
           {{#each recentsamples}}
             {{this}}<br>
@@ -29,9 +29,13 @@
         <div class="tab-pane" id="collect">
           {{#if activetab "#collect"}}
           <button type="button" id="startstop" class="btn btn-danger">Record</button>
+          <br><br>
           {{> nsamples}}
+          <br><br>
+          <!--
           measured sample interval: <span id="measured"></span> ms<br>
           API indicates sample interval: <span id="interval"></span> sec<br>
+          -->
           <br>
           acc x: <span id="accx"></span><br>
           acc y: <span id="accy"></span><br>
@@ -64,10 +68,7 @@
 </template>
 
 <template name="nsamples">
-  <div>
-    {{nsamples}} seconds of sample data saved.
-    <button type="button" id="clear" class="btn btn-danger">Delete</button>
-</div>
+  {{nsamples}} seconds saved.
 </template>
 
 <template name="notFound">

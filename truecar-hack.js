@@ -39,6 +39,16 @@ if (Meteor.isClient) {
       } else {
         $("#startstop").text("Record")
       }
+    },
+    'click input#clear': function () {
+      var filter = user_filter();
+      console.log("Clearing samples for user: " + Session.get("username"))
+      if (filter.username == undefined && !confirm("Really?")) {
+        console.log("Clearing cancelled.")
+        return;
+      }
+      Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
+      console.log("Cleared samples for user: " + Session.get("username"))
     }
   });
 
@@ -94,16 +104,6 @@ if (Meteor.isClient) {
   };
 
   Template.nsamples.events({
-    'click input#clear': function () {
-      var filter = user_filter();
-      console.log("Clearing samples for user: " + Session.get("username"))
-      if (filter.username == undefined && !confirm("Really?")) {
-        console.log("Clearing cancelled.")
-        return;
-      }
-      Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
-      console.log("Cleared samples for user: " + Session.get("username"))
-    }
   });
 
   Template.username.events({
@@ -147,19 +147,25 @@ if (Meteor.isClient) {
         sample.x = e.accelerationIncludingGravity.x;
         sample.y = e.accelerationIncludingGravity.y;
         sample.z = e.accelerationIncludingGravity.z;
-        $("#accx").html(sample.x);
-        $("#accy").html(sample.y);
-        $("#accz").html(sample.z);
-
         if ( e.rotationRate ) {
           sample.a = e.rotationRate.alpha;
           sample.b = e.rotationRate.beta;
           sample.c = e.rotationRate.gamma;
-          $("#rota").html(sample.a);
-          $("#rotb").html(sample.b);
-          $("#rotc").html(sample.c);
         }
         sample.t = t;
+
+        // Live update (Only when not recording)
+
+        if ($("#startstop").text() == "Record") {
+          $("#accx").html(sample.x);
+          $("#accy").html(sample.y);
+          $("#accz").html(sample.z);
+          if ( e.rotationRate ) {
+            $("#rota").html(sample.a);
+            $("#rotb").html(sample.b);
+            $("#rotc").html(sample.c);
+          }
+        }
 
         // Every 20 samples save record in mongoDB.
 
@@ -226,7 +232,8 @@ Router.map(function () {
 
       l.reverse()
 
-      this.response.writeHead(200, {'Content-Type': 'text/html'});
+      //this.response.writeHead(200, {'Content-Type': 'text/html'});
+      this.response.writeHead(200, {'Content-Type': 'application/json', 'Content-Disposition': 'attachment;'});
       this.response.end(JSON.stringify(l));
     }
   });
