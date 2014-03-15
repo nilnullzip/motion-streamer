@@ -23,7 +23,9 @@ if (Meteor.isClient) {
 //  });
 
   Template.body.activetab = function (t) {
-    return t == Session.get("tabs");
+//    console.log("activetab: " + Session.get("tabs"))
+//    return true
+    return (t == Session.get("tabs")) || (t == "#review" && !Session.get("tabs"));
   }
 
   Template.body.username = function (t) {
@@ -40,23 +42,38 @@ if (Meteor.isClient) {
     }
   });
 
+  $(window).bind('hashchange', function() {
+    console.log("hashchange: " + location.hash);
+    Session.set("tabs", location.hash);
+  });
+
+  $(window).bind('popstate', function() {
+    console.log("popstate: " + location.hash);
+    Session.set("tabs", location.hash);
+  });
+
   Template.tabs.rendered = function () {
     console.log("Template.tabs.rendered.")
 
     // Trigger when tab changes
 
     $('#maintabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      console.log("BS: " + e.target.id);
-      Session.set("tabs", e.target.id);
+      console.log("BS: " + e.target.hash);
+      Session.set("tabs", e.target.hash);
+//      console.log("BS: " + location.hash);
+//      Session.set("tabs", location.hash);
     });
 
     // Initialize the tab
 
     if (Session.get("tabs")) {
-      $('#maintabs #' + Session.get("tabs")).tab("show");
+      //console.log("Template.tabs.rendered: tabs=" + Session.get("tabs"))
+      //$('#maintabs #' + Session.get("tabs")).tab("show");
+      $('#maintabs ' + Session.get("tabs") + "tab").tab("show");
     } else {
       $('#maintabs a[data-toggle="tab"]:first').tab("show");
     }
+
   }
  
   // Recent samples display
@@ -111,7 +128,8 @@ if (Meteor.isClient) {
 
         // Only save when capture button is enabled
 
-        if ($("#startstop").text() != "Stop" || Session.get("tabs") != "collecttab") {
+        //if ($("#startstop").text() != "Stop" || Session.get("tabs") != "collecttab") {
+        if ($("#startstop").text() != "Stop" || Session.get("tabs") != "#collect") {
           samples = [];
           return;
         }

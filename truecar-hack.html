@@ -14,20 +14,20 @@
       {{> tabs}}
       <div class="tab-content">
         <div class="tab-pane" id="review">
-          {{#if activetab "reviewtab"}}
+          {{#if activetab "#review"}}
           {{> nsamples}}
           </br>
           JSON data available 
-          <a href="/json/{{username}}">here</a>.
+          <a href="/json/{{username}}" target="_blank">here</a>.
           <br></br>
-          Last 20 samples:<br>
+          Last 20 samples:<br><br>
           {{#each recentsamples}}
             {{this}}<br>
           {{/each}}
           {{/if}}
         </div>
         <div class="tab-pane" id="collect">
-          {{#if activetab "collecttab"}}
+          {{#if activetab "#collect"}}
           <button type="button" id="startstop" class="btn btn-danger">Record</button>
           {{> nsamples}}
           measured sample interval: <span id="measured"></span> ms<br>
