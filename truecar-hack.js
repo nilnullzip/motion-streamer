@@ -218,6 +218,7 @@ if (Meteor.isServer) {
 
   Meteor.startup(function () {
     // Stuff to run at startup on server goes here.
+    Samples._ensureIndex({created_at: -1, username: 1})
   });
 }
 
