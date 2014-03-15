@@ -49,8 +49,9 @@ if (Meteor.isClient) {
       if (filter.username == undefined && !confirm("Really?")) {
         console.log("Clearing cancelled.")
         return;
-      }
-      Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
+      }      
+      Meteor.call("clear", filter);
+      //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
       console.log("Cleared samples for user: " + Session.get("username"))
     }
   });
@@ -189,7 +190,22 @@ if (Meteor.isClient) {
   });
 }
 
+// Server
+
 if (Meteor.isServer) {
+  Meteor.methods({
+    clear: function(filter) {
+      var username = "ALL"
+      console.log("clear: " + JSON.stringify(filter));
+      if (!filter) {
+        username = filter.username;
+      }
+      console.log("Clearing samples for user: " + username);
+      Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
+      console.log("Cleared samples for user: " + username);
+    }
+  });
+
   Meteor.startup(function () {
     // Stuff to run at startup on server goes here.
   });
