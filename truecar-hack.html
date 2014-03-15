@@ -3,26 +3,59 @@
 </head>
 
 <body>
-  <div id="maindiv">
-    <h3>Collect accelerometer samples and save to MongoDB</h3>
-    {{> username}}
-    {{> nsamples}}
-    <br>
-    {{> radios}}
-    <br>
-    <br>
-    To fetch JSON data:<br>
-    > http://truecar-hack.meteor.com/json/[username]?n=[seconds]
-    <br>
+  {{> body}}
+</body>
+
+<template name="body">
+  <div id="maindiv" class="row">
+    <div class="col-xs-6">
+      <h3>Collect accelerometer samples and save to MongoDB</h3>
+      {{> username}}
+      {{> tabs}}
+      <div class="tab-content">
+        <div class="tab-pane" id="review">
+          {{#if activetab "reviewtab"}}
+          {{> nsamples}}
+          Last 20 samples:<br>
+          {{#each recentsamples}}
+            {{this}}<br>
+          {{/each}}
+          To fetch JSON data:<br>
+          > http://truecar-hack.meteor.com/json/[username]?n=[seconds]
+          {{/if}}
+        </div>
+        <div class="tab-pane" id="collect">
+          {{#if activetab "collecttab"}}
+          <input type="button" id="startstop" value="Start capture" />
+          {{> nsamples}}
+          measured sample interval: <span id="measured"></span> ms<br>
+          API indicates sample interval: <span id="interval"></span> sec<br>
+          <br>
+          acc x: <span id="accx"></span><br>
+          acc y: <span id="accy"></span><br>
+          acc z: <span id="accz"></span><br>
+          rot a: <span id="rota"></span><br>
+          rot b: <span id="rotb"></span><br>
+          rot c: <span id="rotc"></span><br>
+          {{/if}}
+        </div>
+      </div>
     <br>
     <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
+    </div>
   </div>
-</body>
+</template>
+
+<template name="tabs">
+  <ul class="nav nav-tabs" id="maintabs">
+    <li><a id="reviewtab" href="#review" data-toggle="tab">Review</a></li>
+    <li><a id="collecttab" href="#collect" data-toggle="tab">Collect</a></li>
+  </ul>
+</template>
 
 <template name="username">
   <div>
     Username: <input type="text" id="username" />
-    <input type="button" id="startstop" value="Start capture" />
     <br/><br/>
   </div>
 </template>

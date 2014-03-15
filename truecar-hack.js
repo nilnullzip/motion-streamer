@@ -23,6 +23,61 @@ if (Meteor.isClient) {
     return filter;
   }
 
+//  Handlebars.registerHelper('sessionvar',function(input){
+//    return "var=" + Session.get(input);
+//  });
+
+  Template.body.activetab = function (t) {
+//    console.log("selected tab: " + $("#maintabs .active").text())
+//    return "bar" + $("#maintabs .active").text()
+//    console.log("selected tab: " + Session.get("tabs"))
+    return t == Session.get("tabs");
+  }
+
+  Template.body.events({
+    'click input#startstop': function () {
+      if ($("#startstop").val() == "Start capture") {
+        $("#startstop").val("Stop capture")
+      } else {
+        $("#startstop").val("Start capture")
+      }
+    }
+  });
+
+  Template.tabs.rendered = function () {
+    console.log("Template.tabs.rendered.")
+    // Detect selected tab
+    $('#maintabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      console.log("BS: " + e.target.id);
+      Session.set("tabs", e.target.id);
+      //e.target // activated tab
+      //e.relatedTarget // previous tab
+    });
+    //$('#maintabs a[data-toggle="tab"]:first').tab("show");
+    if (Session.get("tabs")) {
+      $('#maintabs #' + Session.get("tabs")).tab("show");
+    } else {
+      $('#maintabs a[data-toggle="tab"]:first').tab("show");
+    }
+  }
+
+  Template.tabs.events({
+    'click #maintabs a': function () {
+      console.log("tabs clicked");
+    }
+  });
+ 
+  // Recent samples display
+
+  Template.body.recentsamples = function () {
+    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
+    if (s != null) {
+      return _.map(s["samples"], JSON.stringify );
+    } else {
+      return [];
+    }
+  };
+
   // Live display of number of samples
 
   Template.nsamples.nsamples = function () {
@@ -71,17 +126,6 @@ if (Meteor.isClient) {
     return JSON.stringify(l);
   };
 
-  // Recent samples display
-
-  Template.radios.recentsamples = function () {
-    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
-    if (s != null) {
-      return _.map(s["samples"], JSON.stringify );
-    } else {
-      return [];
-    }
-  };
-
   // Manage radio buttons
 
   Template.radios.radio_value = function(input){
@@ -110,7 +154,7 @@ if (Meteor.isClient) {
 
         // Inhibit saving
 
-        if ($("#startstop").val() == "Start capture") {
+        if ($("#startstop").val() != "Stop capture" || Session.get("tabs") != "collecttab") {
           samples = [];
           return;
         }
