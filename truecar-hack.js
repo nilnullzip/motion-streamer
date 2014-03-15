@@ -38,6 +38,10 @@ if (Meteor.isClient) {
   Template.body.events({
     'click button#startstop': function () {
       if ($("#startstop").text() == "Record") {
+        if (Samples.find(user_filter()).count()) {
+          alert("Please delete samples first.");
+          return;
+        }
         $("#startstop").text("Stop")
       } else {
         $("#startstop").text("Record")
