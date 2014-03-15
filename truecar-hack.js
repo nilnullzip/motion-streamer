@@ -9,7 +9,6 @@ if (Meteor.isClient) {
     if (username == undefined) {
       username = ""
     }
-    //console.log("username: " + username)
     if (username=="ALL") {
       filter = {}
     } else {
@@ -23,13 +22,17 @@ if (Meteor.isClient) {
 //  });
 
   Template.body.activetab = function (t) {
-//    console.log("activetab: " + Session.get("tabs"))
-//    return true
     return (t == Session.get("tabs")) || (t == "#review" && !Session.get("tabs"));
   }
 
   Template.body.username = function (t) {
     return Session.get("username");
+  }
+
+  Template.body.has_username = function (t) {
+    console.log("has_username: " + Session.get("username"));
+    var u = Session.get("username");
+    return u != "" && u != undefined;
   }
 
   Template.body.events({
@@ -40,7 +43,7 @@ if (Meteor.isClient) {
         $("#startstop").text("Record")
       }
     },
-    'click input#clear': function () {
+    'click button#clear': function () {
       var filter = user_filter();
       console.log("Clearing samples for user: " + Session.get("username"))
       if (filter.username == undefined && !confirm("Really?")) {
@@ -112,6 +115,8 @@ if (Meteor.isClient) {
     }
   });
 
+  var motion_event;
+
   // At startup set up device motion event handler.
 
   Meteor.startup(function () {
@@ -126,19 +131,16 @@ if (Meteor.isClient) {
             
       window.ondevicemotion = function(e) {
 
-        // Only save when capture button is enabled
+        motion_event = e;
+
+        var s = "";
 
         //if ($("#startstop").text() != "Stop" || Session.get("tabs") != "collecttab") {
-        if ($("#startstop").text() != "Stop" || Session.get("tabs") != "#collect") {
-          samples = [];
-          return;
-        }
-
         // Measure sample interval and siplay on page
 
         var t = Date.now();
-        $("#measured").html(t - timestamp);
-        $("#interval").html(e.interval);
+        s += "measured sample period: " + (t - timestamp) + " ms<br>";
+        s += "API sample period: " + Math.floor(e.interval*1000) + " ms<br><br>";
         timestamp = t
 
         // Create the sample
@@ -156,16 +158,22 @@ if (Meteor.isClient) {
 
         // Live update (Only when not recording)
 
-        if ($("#startstop").text() == "Record") {
-          $("#accx").html(sample.x);
-          $("#accy").html(sample.y);
-          $("#accz").html(sample.z);
-          if ( e.rotationRate ) {
-            $("#rota").html(sample.a);
-            $("#rotb").html(sample.b);
-            $("#rotc").html(sample.c);
+        if ($("#startstop").text() != "Stop" || Session.get("tabs") != "#collect") {
+          samples = [];
+          if ($("#startstop").text() == "Record") {
+            s += "accx: " + sample.x + "<br/>";
+            s += "accy: " + sample.y + "<br/>";
+            s += "accz: " + sample.z + "<br/>";
+            if ( e.rotationRate ) {
+              s += "rota: " + sample.a + "<br/>";
+              s += "rota: " + sample.b + "<br/>";
+              s += "rota: " + sample.b + "<br/>";
+            }
           }
+          $("#accxyz").html(s);
+          return;
         }
+        $("#accxyz").html("");
 
         // Every 20 samples save record in mongoDB.
 

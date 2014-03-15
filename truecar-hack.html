@@ -1,5 +1,6 @@
 <head>
   <title>Collect accelerometer samples.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
@@ -7,10 +8,11 @@
 
 <template name="body">
   <div class="container">
-  <div id="maindiv" class="row" style="margin:1em">
-    <div class="col-xs-4">
-      <h3>Collect accelerometer samples and save to MongoDB</h3>
+  <div id="maindiv" class="row" >
+    <div class="span4">
+      <h3>Collect accelerometer samples</h3>
       {{> username}}
+      {{#if has_username}}
       {{> tabs}}
       <div class="tab-content">
         <div class="tab-pane" id="review">
@@ -20,7 +22,7 @@
           <br><br>
           {{> nsamples}}
           </br><br>
-          Last 20 samples:<br><br>
+          Recent samples:<br><br>
           {{#each recentsamples}}
             {{this}}<br>
           {{/each}}
@@ -32,22 +34,18 @@
           <br><br>
           {{> nsamples}}
           <br><br>
-          <!--
-          measured sample interval: <span id="measured"></span> ms<br>
-          API indicates sample interval: <span id="interval"></span> sec<br>
-          -->
-          <br>
-          acc x: <span id="accx"></span><br>
-          acc y: <span id="accy"></span><br>
-          acc z: <span id="accz"></span><br>
-          rot a: <span id="rota"></span><br>
-          rot b: <span id="rotb"></span><br>
-          rot c: <span id="rotc"></span><br>
+          <div id="accxyz">This device does not have an accelerometer.</div>
           {{/if}}
         </div>
       </div>
-    <br>
-    <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
+      <div class="span4">
+      </div>
+      <div class="span4">
+      </div>
+
+      {{/if}}
+      <hr>
+      <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
     </div>
   </div>
   </div>
