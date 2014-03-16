@@ -17,7 +17,7 @@
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
-          <a href="/json/{{username}}"><button type="button" class="btn btn-primary">Download</button></a>
+          <a href="/json/{{sessionvar 'username'}}"><button type="button" class="btn btn-primary">Download</button></a>
           <button type="button" id="clear" class="btn btn-danger">Delete</button>
           <br><br>
           {{> nsamples}}
@@ -55,7 +55,7 @@
 
 <template name="username">
   <div>
-    Username: <input type="text" id="username" />
+    Username: <input type="text" id="username" value="{{sessionvar 'username'}}"/>
     <br/><br/>
   </div>
 </template>

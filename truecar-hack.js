@@ -4,6 +4,16 @@ Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
 
 if (Meteor.isClient) {
 
+  // Helper to get session variables
+
+  Handlebars.registerHelper('sessionvar',function(v){
+    var val = Session.get(v);
+    console.log("sessionvar: " + v + "=" + val)
+    return val;
+  });
+
+  // Helper to formulate query
+ 
   var user_filter = function () {
     username = Session.get("username")
     if (username == undefined) {
@@ -17,16 +27,10 @@ if (Meteor.isClient) {
     return filter;
   }
 
-//  Handlebars.registerHelper('sessionvar',function(input){
-//    return "var=" + Session.get(input);
-//  });
+  // Body functions
 
   Template.body.activetab = function (t) {
     return (t == Session.get("tabs")) || (t == "#review" && !Session.get("tabs"));
-  }
-
-  Template.body.username = function () {
-    return Session.get("username");
   }
 
   Template.body.has_username = function () {
@@ -34,6 +38,17 @@ if (Meteor.isClient) {
     var u = Session.get("username");
     return u != "" && u != undefined;
   }
+
+  // Recent samples display
+
+  Template.body.recentsamples = function () {
+    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
+    if (s != null) {
+      return _.map(s["samples"], JSON.stringify );
+    } else {
+      return [];
+    }
+  };
 
   Template.body.events({
     'click button#startstop': function () {
@@ -65,6 +80,8 @@ if (Meteor.isClient) {
       $("button#startstop").attr("disabled", null)
     }
   }
+
+  // Navigation tabs
 
   $(window).bind('hashchange', function() {
     console.log("hashchange: " + location.hash);
@@ -99,18 +116,7 @@ if (Meteor.isClient) {
     }
 
   }
- 
-  // Recent samples display
-
-  Template.body.recentsamples = function () {
-    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
-    if (s != null) {
-      return _.map(s["samples"], JSON.stringify );
-    } else {
-      return [];
-    }
-  };
-
+  
   // Live display of number of samples
 
   Template.nsamples.nsamples = function () {
@@ -122,6 +128,7 @@ if (Meteor.isClient) {
 
   Template.username.events({
     'keyup input#username': function () {
+//    'blur input#username': function () {
       Session.set("username", $("#username").val());
     }
   });
