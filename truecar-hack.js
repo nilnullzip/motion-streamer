@@ -61,8 +61,8 @@ if (Meteor.isClient) {
   });
 
   Template.body.rendered = function () {
-    if (window.DeviceMotionEvent == undefined) {
-      $("button#startstop").attr("disabled", true)
+    if (motion_event) {
+      $("button#startstop").attr("disabled", null)
     }
   }
 

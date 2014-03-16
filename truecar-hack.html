@@ -30,11 +30,11 @@
         </div>
         <div class="tab-pane" id="collect">
           {{#if activetab "#collect"}}
-          <button type="button" id="startstop" class="btn btn-danger">Record</button>
+          <button type="button" id="startstop" class="btn btn-danger" disabled>Record</button>
           <br><br>
           {{> nsamples}}
           <br><br>
-          <div id="accxyz">This device does support motion.</div>
+          <div id="accxyz">This device does not support motion.</div>
           {{/if}}
         </div>
       </div>
@@ -48,8 +48,8 @@
 
 <template name="tabs">
   <ul class="nav nav-tabs" id="maintabs">
-    <li><a id="reviewtab" href="#review" data-toggle="tab">Review</a></li>
     <li><a id="collecttab" href="#collect" data-toggle="tab">Collect</a></li>
+    <li><a id="reviewtab" href="#review" data-toggle="tab">Review</a></li>
   </ul>
 </template>
 
