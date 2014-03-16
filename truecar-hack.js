@@ -25,11 +25,11 @@ if (Meteor.isClient) {
     return (t == Session.get("tabs")) || (t == "#review" && !Session.get("tabs"));
   }
 
-  Template.body.username = function (t) {
+  Template.body.username = function () {
     return Session.get("username");
   }
 
-  Template.body.has_username = function (t) {
+  Template.body.has_username = function () {
     console.log("has_username: " + Session.get("username"));
     var u = Session.get("username");
     return u != "" && u != undefined;
@@ -211,7 +211,8 @@ if (Meteor.isServer) {
         username = filter.username;
       }
       console.log("Clearing samples for user: " + username);
-      Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
+      //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
+      Samples.remove(filter);
       console.log("Cleared samples for user: " + username);
     }
   });
