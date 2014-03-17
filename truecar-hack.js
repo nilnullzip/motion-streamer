@@ -1,7 +1,7 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
 
 Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
-Users = new Meteor.Collection("tcusers");
+Users = Meteor.users;
 
 if (Meteor.isClient) {
 
@@ -159,7 +159,7 @@ if (Meteor.isClient) {
 
   Template.recording.recording = function () {
       var username = Session.get("username");
-      var u = Users.findOne(username);
+      var u = Users.findOne({username: username});
       console.log("recording: " + JSON.stringify(u))
 //      return u != undefined && u.recording;
       return u != undefined && u.profile && u.profile.recording;
@@ -306,7 +306,7 @@ if (Meteor.isServer) {
         return;
       }
 //      var r = Users.update(username, {$set: {recording: recording}});
-      var r = Users.update(username, {$set: {'profile.recording': recording}});
+      var r = Users.update({username: username}, {$set: {'profile.recording': recording}});
 //      var r = Users.upsert(username, {$set: {recording: recording}}, {}, function (e,n) {
 //        console.log("set_recording: error: " + e);
 //        console.log("set_recording: number of docs: " + r);
