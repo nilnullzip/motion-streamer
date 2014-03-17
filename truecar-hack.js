@@ -115,6 +115,9 @@ if (Meteor.isClient) {
 
   var set_recording = function(recording) {
         var username = Session.get("username");
+        if (!username) {
+          return;
+        }
         if (recording && Samples.find(user_filter()).count()) {
           alert("Please delete samples first.");
           return;
