@@ -17,29 +17,32 @@
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
+          <span class="muted">Set your laptop on this tab to control data collection from your phone.</span><br><br>
           {{> recording}}
-          <a href="/json/{{sessionvar 'username'}}"><button type="button" class="btn btn-primary">Download</button></a>
+          <a href="/json/{{sessionvar 'username'}}">
+            <button type="button" class="btn btn-primary">
+              Download
+            </button>
+          </a>
           <button type="button" id="clear" class="btn btn-danger">Delete</button>
           <br><br>
           {{> nsamples}}
           </br><br>
-          <span class="muted">Recent data:</span><br>
+          <div class="muted" style="font-family:monospace;">Recent data:<br>
           {{#each recentsamples}}
             {{this}}<br>
           {{/each}}
+          </div>
           {{/if}}
         </div>
         <div class="tab-pane" id="collect">
           {{#if activetab "#collect"}}
-          <!--
-          <button type="button" id="startstop" class="btn btn-danger" disabled>Record</button>
-          <button type="button" id="startstop" class="btn btn-danger">Record</button>
-          -->
-          {{> recording}}
+          <span class="muted">Set your phone on this tab to enable data collection.</span>
           <br><br>
           {{> nsamples}}
           <br><br>
-          <div id="accxyz">This device does not support motion.</div>
+          <span class="muted">Raw motion data:</span>
+          <div id="accxyz" class="muted" style="font-family:monospace;">This device does not support motion.</div>
           {{/if}}
         </div>
       </div>
@@ -54,7 +57,7 @@
 <template name="tabs">
   <ul class="nav nav-tabs" id="maintabs">
     <li><a id="collecttab" href="#collect" data-toggle="tab">Collect</a></li>
-    <li><a id="reviewtab" href="#review" data-toggle="tab">Review</a></li>
+    <li><a id="reviewtab" href="#review" data-toggle="tab">Control</a></li>
   </ul>
 </template>
 
@@ -67,16 +70,21 @@
 </template>
 
 <template name="nsamples">
-  {{nsamples}} seconds recorded.
+  {{#if recording}}
+  <span style="color:red">
+  {{else}}
+  <span>
+  {{/if}}
+    <strong>Seconds recorded: {{nsamples}}</strong>
+  </span>
 </template>
 
 <template name="recording">
-  <button type="button" id="startstop" class="btn btn-danger">
-    {{#if recording}}
-    Stop
-    {{else}}
-    Record
-    {{/if}}
+  {{#if recording}}
+    <button type="button" id="startstop" class="btn">Stop</button>
+  {{else}}
+    <button type="button" id="startstop" class="btn btn-success">Record</button>
+  {{/if}}
   </button>
 </template>
 
