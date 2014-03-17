@@ -11,12 +11,13 @@
   <div id="maindiv" class="row" >
     <div class="span12">
       <h3>Collect motion data</h3>
-      <span class="muted">{{> username}}</span>
+      {{> username}}
       {{#if has_username}}
       {{> tabs}}
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
+          {{> recording}}
           <a href="/json/{{sessionvar 'username'}}"><button type="button" class="btn btn-primary">Download</button></a>
           <button type="button" id="clear" class="btn btn-danger">Delete</button>
           <br><br>
@@ -30,7 +31,11 @@
         </div>
         <div class="tab-pane" id="collect">
           {{#if activetab "#collect"}}
+          <!--
           <button type="button" id="startstop" class="btn btn-danger" disabled>Record</button>
+          <button type="button" id="startstop" class="btn btn-danger">Record</button>
+          -->
+          {{> recording}}
           <br><br>
           {{> nsamples}}
           <br><br>
@@ -55,13 +60,24 @@
 
 <template name="username">
   <div>
-    Username: <input type="text" id="username" value="{{sessionvar 'username'}}"/>
+    <span class="muted">Username:</span>
+    <input type="text" id="username" value="{{sessionvar 'username'}}"/>
     <br/><br/>
   </div>
 </template>
 
 <template name="nsamples">
-  {{nsamples}} seconds saved.
+  {{nsamples}} seconds recorded.
+</template>
+
+<template name="recording">
+  <button type="button" id="startstop" class="btn btn-danger">
+    {{#if recording}}
+    Stop
+    {{else}}
+    Record
+    {{/if}}
+  </button>
 </template>
 
 <template name="notFound">

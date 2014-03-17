@@ -1,6 +1,7 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
 
 Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
+Users = new Meteor.Collection("tcusers");
 
 if (Meteor.isClient) {
 
@@ -15,14 +16,14 @@ if (Meteor.isClient) {
   // Helper to formulate query
  
   var user_filter = function () {
-    username = Session.get("username")
+    var username = Session.get("username")
     if (username == undefined) {
       username = ""
     }
     if (username=="ALL") {
       filter = {}
     } else {
-      filter = {username: username}      
+      filter = {username: username}
     }
     return filter;
   }
@@ -51,17 +52,6 @@ if (Meteor.isClient) {
   };
 
   Template.body.events({
-    'click button#startstop': function () {
-      if ($("#startstop").text() == "Record") {
-        if (Samples.find(user_filter()).count()) {
-          alert("Please delete samples first.");
-          return;
-        }
-        $("#startstop").text("Stop")
-      } else {
-        $("#startstop").text("Record")
-      }
-    },
     'click button#clear': function () {
       var filter = user_filter();
       console.log("Clearing samples for user: " + Session.get("username"))
@@ -76,8 +66,10 @@ if (Meteor.isClient) {
   });
 
   Template.body.rendered = function () {
-    if (motion_event) {
-      $("button#startstop").attr("disabled", null)
+    if (device_motion_timout) {
+      $("#collect button#startstop").attr("disabled", "")
+    } else {
+      $("#collect button#startstop").attr("disabled", null)      
     }
   }
 
@@ -126,6 +118,59 @@ if (Meteor.isClient) {
   Template.nsamples.events({
   });
 
+  Template.recording.recording = function () {
+      var username = Session.get("username");
+      var u = Users.findOne(username);
+      //console.log("recording: " + JSON.stringify(u))
+      console.log("recording: " + (u != undefined && u.recording))
+      return u != undefined && u.recording;
+      return false
+  }
+
+  var set_recording = function(r) {
+        var username = Session.get("username");
+        if (r && Samples.find(user_filter()).count()) {
+          alert("Please delete samples first.");
+          return;
+        }
+        console.log("startstop: setting recording" + r)
+        Users.remove(username);
+        Users.insert({_id: username, recording: r});
+//        Users.upsert(username, {_id: username, recording: r});
+        check_timout(r);
+  }
+
+  Template.recording.events({
+    'click button#startstop': function () {
+      var username = Session.get("username");
+      //if ($("#startstop").text() == "Record") {
+      if (!Template.recording.recording()) {
+        set_recording(true);
+      } else {
+        set_recording(false);
+      }
+      /*
+      if (!Template.recording.recording()) {
+        if (Samples.find(user_filter()).count()) {
+          alert("Please delete samples first.");
+          return;
+        }
+        console.log("startstop: setting recording true")
+        Users.remove(username);
+        Users.insert({_id: username, recording: true});
+//        Users.upsert(username, {_id: username, recording: true});
+        //$("#startstop").text("Stop")
+      } else {
+        //$("#startstop").text("Record")
+        console.log("startstop: setting recording false")
+        Users.remove(username);
+        Users.insert({_id: username, recording: false});
+//        Users.upsert(username, {_id: username, recording: false});
+      }
+      */
+    }
+  });
+
   Template.username.events({
     'keyup input#username': function () {
 //    'blur input#username': function () {
@@ -133,13 +178,36 @@ if (Meteor.isClient) {
     }
   });
 
-  var motion_event;
+  var device_motion_timout = 0;
+
+  $(Meteor.setInterval(function(){
+    device_motion_timout++;
+  }, 1000));
+
+  var recording_timeout = null;
+  var check_timout = function(r){
+    clearTimeout(recording_timeout);
+    if (!r) {
+      console.log("check_timout: canclling check.");
+      return;
+    }
+    console.log("Setting recording timeout")
+    recording_timeout = Meteor.setTimeout(function(){
+      console.log("Setting record button to record")
+      set_recording(false);
+    }, 5000)
+  }
+
+  Deps.autorun(function(){
+    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
+    check_timout(true);
+  });
 
   // At startup set up device motion event handler.
 
   Meteor.startup(function () {
 
-    Session.set("radio_value", $("input:radio[name=display]:checked").val())
+    //Session.set("radio_value", $("input:radio[name=display]:checked").val())
     var timestamp = 0;
     var samples = [];
 
@@ -149,7 +217,7 @@ if (Meteor.isClient) {
             
       window.ondevicemotion = function(e) {
 
-        motion_event = e;
+        device_motion_timout = 0;
 
         var s = "";
 
@@ -176,7 +244,7 @@ if (Meteor.isClient) {
 
         // Live update (Only when not recording)
 
-        if ($("#startstop").text() != "Stop" || Session.get("tabs") != "#collect") {
+        if ($("#startstop").text().trim() != "Stop" || Session.get("tabs") != "#collect") {
           samples = [];
           if ($("#startstop").text() == "Record") {
             s += "accx: " + sample.x + "<br/>";
@@ -198,7 +266,7 @@ if (Meteor.isClient) {
         samples.push(sample);
         if (samples.length > 20) {
           created_at = new Date().getTime();
-          username = $("#username").val();
+          var username = $("#username").val();
           Samples.insert({samples: samples, created_at: created_at, username: username});
           samples = [];
         }
