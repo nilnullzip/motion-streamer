@@ -114,19 +114,19 @@ if (Meteor.isClient) {
   // Set the recording state
 
   var set_recording = function(recording) {
-        var username = Session.get("username");
-        if (!username) {
-          return;
-        }
-        if (recording && Samples.find(user_filter()).count()) {
-          alert("Please delete samples first.");
-          return;
-        }
-        //console.log("startstop: setting recording " + recording)
-        Users.remove(username);
-        Users.insert({_id: username, recording: recording});
+    var username = Session.get("username");
+    if (!username) {
+      return;
+    }
+    if (recording && Samples.find(user_filter()).count()) {
+      alert("Please delete samples first.");
+      return;
+    }
+    //console.log("set_recording: " + recording)
+    Users.remove(username);
+    Users.insert({_id: username, recording: recording});
 //        Users.upsert(username, {_id: username, recording: r});
-        reset_timeout(recording);
+    reset_timeout(recording);
   }
 
   // Timeout if no recording and reset record button
@@ -269,7 +269,7 @@ if (Meteor.isClient) {
         samples.push(sample);
         if (samples.length > 20) {
           created_at = new Date().getTime();
-          var username = $("#username").val();
+          var username = Session.get("username");
           Samples.insert({samples: samples, created_at: created_at, username: username});
           samples = [];
         }
