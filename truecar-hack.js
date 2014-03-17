@@ -46,6 +46,10 @@ if (Meteor.isClient) {
     return (t == Session.get("tabs")) || (t == "#review" && !Session.get("tabs"));
   }
 
+  Template.body.username = function () {
+    return get_username();
+  }
+
   Template.body.has_username = function () {
     //console.log("has_username: " + get_username());
     var username = get_username();
