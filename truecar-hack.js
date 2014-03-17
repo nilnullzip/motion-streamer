@@ -123,9 +123,13 @@ if (Meteor.isClient) {
       return;
     }
     //console.log("set_recording: " + recording)
-    Users.remove(username);
-    Users.insert({_id: username, recording: recording});
-//        Users.upsert(username, {_id: username, recording: r});
+//    Users.remove(username);
+//    Users.insert({_id: username, recording: recording});
+//    var r = Users.upsert(username, {$set: {_id: username, recording: recording}});
+//    var r = Users.upsert(user_filter(), {$set: {recording: recording}});
+//    console.log("set_recording: upsert returned " + r)
+    console.log("set_recording calling server")
+    Meteor.call("set_recording", recording);
     reset_timeout(recording);
   }
 
@@ -134,6 +138,7 @@ if (Meteor.isClient) {
   var timeout = null;
   var reset_timeout = function(recording){
     clearTimeout(timeout);
+//    return; // ***************** DEBUG *****************
     if (!recording) {
       //console.log("reset_timeout: canceling check.");
       return;
@@ -156,7 +161,8 @@ if (Meteor.isClient) {
       var username = Session.get("username");
       var u = Users.findOne(username);
       console.log("recording: " + JSON.stringify(u))
-      return u != undefined && u.recording;
+//      return u != undefined && u.recording;
+      return u != undefined && u.profile && u.profile.recording;
   }
 
   Template.recording.events({
@@ -292,6 +298,20 @@ if (Meteor.isServer) {
       //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
       Samples.remove(filter);
       console.log("Cleared samples for user: " + username);
+    },
+    set_recording: function(recording) {
+      var u = Meteor.user();
+      var username = u.username;
+      if (!username) {
+        return;
+      }
+//      var r = Users.update(username, {$set: {recording: recording}});
+      var r = Users.update(username, {$set: {'profile.recording': recording}});
+//      var r = Users.upsert(username, {$set: {recording: recording}}, {}, function (e,n) {
+//        console.log("set_recording: error: " + e);
+//        console.log("set_recording: number of docs: " + r);
+//      });
+//      console.log("set_recording: upsert returned " + r)
     }
   });
 
