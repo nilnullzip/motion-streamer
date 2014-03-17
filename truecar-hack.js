@@ -185,6 +185,15 @@ if (Meteor.isClient) {
     }
   });
 
+  Deps.autorun(function(){
+    var u = Meteor.user();
+    if (!u) {
+      Session.set("username", null);
+      return;
+    } 
+    Session.set("username", Meteor.user().username);
+  });
+
   var device_motion_timout = 0;
 
   $(Meteor.setInterval(function(){
@@ -194,6 +203,10 @@ if (Meteor.isClient) {
   // At startup set up device motion event handler.
 
   Meteor.startup(function () {
+
+    Accounts.ui.config({
+      passwordSignupFields: 'USERNAME_ONLY'
+    });
 
     //Session.set("radio_value", $("input:radio[name=display]:checked").val())
     var timestamp = 0;
