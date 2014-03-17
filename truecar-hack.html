@@ -20,7 +20,8 @@
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
-          <span class="muted">Set your laptop on this tab to control the capture from your phone.</span><br><br>
+          <span class="muted">Set your laptop on this tab to control the capture from your phone.</span>
+          <br><br>
           {{> recording}}
           <a href="/json/{{sessionvar 'username'}}" target="_blank">
             <button type="button" class="btn btn-primary">
@@ -31,6 +32,8 @@
           <br><br>
           {{> nsamples}}
           </br><br>
+          <span class="muted">Note: right click on the download button to specify a filename.</span>
+          </br><br>
           <div class="muted" style="font-family:monospace;">Recent data:<br>
           {{#each recentsamples}}
             {{this}}<br>
@@ -40,9 +43,12 @@
         </div>
         <div class="tab-pane" id="collect">
           {{#if activetab "#collect"}}
-          <span class="muted">Set your phone on this tab to enable data capture. Make sure you have only one phone on this tab at a time!</span>
-          <br><br>
+          <span class="muted">
+            Set your phone on this tab to enable motion data capture.<br><br>
+          </span>
           {{> nsamples}}
+          <br><br>
+          {{> instructions}}
           <br><br>
           <span class="muted">Raw motion data:</span>
           <div id="accxyz" class="muted" style="font-family:monospace;">This device does not support motion.</div>
@@ -96,6 +102,16 @@
     <button type="button" id="startstop" class="btn btn-success">Record</button>
   {{/if}}
   </button>
+</template>
+
+<template name="instructions">
+  <span class="muted">
+    This page must remain open during capture. Change your phone settings so it never sleeps/autolocks. On iPhone go to Settings>General>Autolock. On Android go to Settings>Display>Sleep.
+    <br><br>
+    If you put your phone in your pocket during capture, you might want to tape some cardboard to the face of the phone to inhibit any touch events.
+    <br><br>
+    Important: make sure you have only one phone on this tab at a time!
+  </span>
 </template>
 
 <template name="notFound">
