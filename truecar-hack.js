@@ -331,7 +331,7 @@ Router.map(function () {
       l.reverse()
 
       //this.response.writeHead(200, {'Content-Type': 'text/html'});
-      this.response.writeHead(200, {'Content-Type': 'application/json', 'Content-Disposition': 'attachment;'});
+      this.response.writeHead(200, {'Content-Type': 'application/json', 'Content-Disposition': 'attachment'});
       this.response.end(JSON.stringify(l));
     }
   });
