@@ -17,7 +17,7 @@
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
-          <span class="muted">Set your laptop on this tab to control data collection from your phone.</span><br><br>
+          <span class="muted">Set your laptop on this tab to control data collection from your phone. Username must be the same as on the phone.</span><br><br>
           {{> recording}}
           <a href="/json/{{sessionvar 'username'}}" target="_blank">
             <button type="button" class="btn btn-primary">
@@ -92,7 +92,7 @@
   <div class="container">
   <div class="row">
     <div class="col-xs-12">
-      <h1>Page not found!</h1>
+      <h2>Page not found.</h2>
     </div>
   </div>
   </div>

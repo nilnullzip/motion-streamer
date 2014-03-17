@@ -317,7 +317,7 @@ Router.map(function () {
       if (n != undefined) {
         records = Math.ceil(n/20);
       }
-      console.log ("records: " + records)
+      //console.log ("records: " + records)
       var samples = Samples.find(filter, {sort: {created_at: -1}, limit: records});
       var l = [];
       samples.forEach(function (s) {
