@@ -13,10 +13,22 @@ if (Meteor.isClient) {
     return val;
   });
 
+  // Helper to get current user name
+
+  var get_username = function() {
+    var u = Meteor.user();
+    if (!u) {
+      return "";
+    }
+    return u.username;
+  }
+
   // Helper to formulate query
  
   var user_filter = function () {
-    var username = Session.get("username")
+//    u = Meteor.user();
+//    var username = u ? u.username : undefined;
+    var username = get_username();
     if (username == undefined) {
       username = ""
     }
@@ -35,9 +47,11 @@ if (Meteor.isClient) {
   }
 
   Template.body.has_username = function () {
-    //console.log("has_username: " + Session.get("username"));
-    var u = Session.get("username");
-    return u != "" && u != undefined;
+    //console.log("has_username: " + get_username());
+    var username = get_username();
+    //u = Meteor.user();
+    //var username = u ? u.username : undefined;
+    return username != "" && username != undefined;
   }
 
   // Recent samples display
@@ -54,14 +68,14 @@ if (Meteor.isClient) {
   Template.body.events({
     'click button#clear': function () {
       var filter = user_filter();
-      console.log("Clearing samples for user: " + Session.get("username"))
+      console.log("Clearing samples for user: " + get_username())
       if (filter.username == undefined && !confirm("Really?")) {
         console.log("Clearing cancelled.")
         return;
       }      
       Meteor.call("clear", filter);
       //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
-      console.log("Cleared samples for user: " + Session.get("username"))
+      console.log("Cleared samples for user: " + get_username())
     }
   });
 
@@ -107,14 +121,14 @@ if (Meteor.isClient) {
     return Samples.find(user_filter()).count();
   };
 
-  Template.nsamples.recording = function () {
+  Template.nsamples.recording = function () {  // ********** Is this kosher?
     return Template.recording.recording();
   };
 
   // Set the recording state
 
   var set_recording = function(recording) {
-    var username = Session.get("username");
+    var username = get_username();
     if (!username) {
       return;
     }
@@ -123,12 +137,6 @@ if (Meteor.isClient) {
       return;
     }
     //console.log("set_recording: " + recording)
-//    Users.remove(username);
-//    Users.insert({_id: username, recording: recording});
-//    var r = Users.upsert(username, {$set: {_id: username, recording: recording}});
-//    var r = Users.upsert(user_filter(), {$set: {recording: recording}});
-//    console.log("set_recording: upsert returned " + r)
-    console.log("set_recording calling server")
     Meteor.call("set_recording", recording);
     reset_timeout(recording);
   }
@@ -158,7 +166,7 @@ if (Meteor.isClient) {
   // The recording button
 
   Template.recording.recording = function () {
-      var username = Session.get("username");
+      var username = get_username();
       var u = Users.findOne({username: username});
       console.log("recording: " + JSON.stringify(u))
 //      return u != undefined && u.recording;
@@ -173,7 +181,7 @@ if (Meteor.isClient) {
   });
 
   // Disable record button
-
+/*
   Template.recording.rendered = function () {
     if (device_motion_timout) {
       $("#collect button#startstop").attr("disabled", "")
@@ -181,25 +189,7 @@ if (Meteor.isClient) {
       $("#collect button#startstop").attr("disabled", null)      
     }
   }
-
-  // Username field
-
-  Template.username.events({
-    'keyup input#username': function () {
-//    'blur input#username': function () {
-      Session.set("username", $("#username").val());
-    }
-  });
-
-  Deps.autorun(function(){
-    var u = Meteor.user();
-    if (!u) {
-      Session.set("username", null);
-      return;
-    } 
-    Session.set("username", Meteor.user().username);
-  });
-
+*/
   var device_motion_timout = 0;
 
   $(Meteor.setInterval(function(){
@@ -275,7 +265,7 @@ if (Meteor.isClient) {
         samples.push(sample);
         if (samples.length > 20) {
           created_at = new Date().getTime();
-          var username = Session.get("username");
+          var username = get_username();
           Samples.insert({samples: samples, created_at: created_at, username: username});
           samples = [];
         }
@@ -305,13 +295,7 @@ if (Meteor.isServer) {
       if (!username) {
         return;
       }
-//      var r = Users.update(username, {$set: {recording: recording}});
-      var r = Users.update({username: username}, {$set: {'profile.recording': recording}});
-//      var r = Users.upsert(username, {$set: {recording: recording}}, {}, function (e,n) {
-//        console.log("set_recording: error: " + e);
-//        console.log("set_recording: number of docs: " + r);
-//      });
-//      console.log("set_recording: upsert returned " + r)
+      Users.update({username: username}, {$set: {'profile.recording': recording}});
     }
   });
 
