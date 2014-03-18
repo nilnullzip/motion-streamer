@@ -156,7 +156,7 @@ if (Meteor.isClient) {
     timeout = Meteor.setTimeout(function(){
       //console.log("Setting record button to record")
       set_recording(false);
-    }, 5000)
+    }, 10000)
   }
 
   Deps.autorun(function(){
