@@ -240,20 +240,16 @@ if (Meteor.isClient) {
 
         // Live update (Only when not recording)
 
-        //if ($("#startstop").text().trim() != "Stop" || Session.get("tabs") != "#collect") {
         if (!Template.recording.recording() || Session.get("tabs") != "#collect") {
           samples = [];
-          //if ($("#startstop").text().trim() == "Record") {
-          //if (!Template.recording.recording()) {
-            s += "accx: " + sample.x + "<br/>";
-            s += "accy: " + sample.y + "<br/>";
-            s += "accz: " + sample.z + "<br/>";
-            if ( e.rotationRate ) {
-              s += "rota: " + sample.a + "<br/>";
-              s += "rota: " + sample.b + "<br/>";
-              s += "rota: " + sample.b + "<br/>";
-            }
-          //}
+          s += "accx: " + sample.x + "<br/>";
+          s += "accy: " + sample.y + "<br/>";
+          s += "accz: " + sample.z + "<br/>";
+          if ( e.rotationRate ) {
+            s += "rota: " + sample.a + "<br/>";
+            s += "rota: " + sample.b + "<br/>";
+            s += "rota: " + sample.b + "<br/>";
+          }
           $("#accxyz").html(s);
           return;
         }
@@ -263,7 +259,7 @@ if (Meteor.isClient) {
 
         samples.push(sample);
         if (samples.length >= 20) {
-          created_at = new Date().getTime();
+          created_at = t;
           var username = get_username();
           Samples.insert({samples: samples, created_at: created_at, username: username});
           samples = [];
@@ -325,6 +321,13 @@ Router.map(function () {
         filter = {username: username};
       }
 
+      var t = this.params.t;
+      if (t != undefined) {
+        console.log("JSON: from time: " + t)
+        filter['created_at'] = {$gt : parseInt(t)};
+      }
+
+      console.log("JSON: query: " + JSON.stringify(filter));
       var n = this.params.n;
       var records = n
       if (n != undefined) {
