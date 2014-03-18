@@ -17,10 +17,7 @@ if (Meteor.isClient) {
 
   var get_username = function() {
     var u = Meteor.user();
-    if (!u) {
-      return "";
-    }
-    return u.username;
+    return u ? u.username : "";;
   }
 
   // Helper to formulate query
@@ -172,8 +169,7 @@ if (Meteor.isClient) {
   Template.recording.recording = function () {
       var username = get_username();
       var u = Users.findOne({username: username});
-      console.log("recording: " + JSON.stringify(u))
-//      return u != undefined && u.recording;
+//      console.log("recording: " + JSON.stringify(u))
       return u != undefined && u.profile && u.profile.recording;
   }
 
@@ -222,7 +218,6 @@ if (Meteor.isClient) {
 
         var s = "";
 
-        //if ($("#startstop").text() != "Stop" || Session.get("tabs") != "collecttab") {
         // Measure sample interval and siplay on page
 
         var t = Date.now();
@@ -267,7 +262,7 @@ if (Meteor.isClient) {
         // Every 20 samples save record in mongoDB.
 
         samples.push(sample);
-        if (samples.length > 20) {
+        if (samples.length >= 20) {
           created_at = new Date().getTime();
           var username = get_username();
           Samples.insert({samples: samples, created_at: created_at, username: username});
@@ -283,13 +278,8 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.methods({
     clear: function(filter) {
-      var username = "ALL"
-      console.log("clear: " + JSON.stringify(filter));
-      if (!filter) {
-        username = filter.username;
-      }
+      var username = filter ? filter.username : "ALL";
       console.log("Clearing samples for user: " + username);
-      //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
       Samples.remove(filter);
       console.log("Cleared samples for user: " + username);
     },
@@ -304,7 +294,6 @@ if (Meteor.isServer) {
   });
 
   Meteor.startup(function () {
-    // Stuff to run at startup on server goes here.
     Samples._ensureIndex({created_at: -1, username: 1})
   });
 }
@@ -354,7 +343,6 @@ Router.map(function () {
 
       l.reverse()
 
-      //this.response.writeHead(200, {'Content-Type': 'text/html'});
       this.response.writeHead(200, {'Content-Type': 'application/json', 'Content-Disposition': 'attachment'});
       this.response.end(JSON.stringify(l));
     }
