@@ -180,6 +180,18 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.status.status = function () {
+    s = Meteor.status()['status']
+    if (s=="connected") {
+      r = 'muted' ;
+    } else if (s=="connecting") {
+      r = 'text-warning' ;
+    } else {
+      r = 'text-error';
+    }
+    return new Handlebars.SafeString("<span class='" + r + "'>" + s + "</span>");
+  }
+ 
   // Disable record button
 /*
   Template.recording.rendered = function () {

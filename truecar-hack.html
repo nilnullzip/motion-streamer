@@ -10,8 +10,9 @@
   <div class="container">
   <div id="maindiv" class="row" >
     <div class="span12">
-      <div style="float:right">
+      <div class="text-right">
         <br>
+        {{> status}}
         {{loginButtons align="right"}}
       </div>
       <br>
@@ -126,6 +127,12 @@
     </div>
   </div>
   </div>
+</template>
+
+<template name="status">
+  <span style="margin-right:1em">
+    {{status}}
+  </span>
 </template>
 
 <template name="python">
