@@ -35,11 +35,7 @@
           </br><br>
           <span class="muted">Note: right click on the download button to specify a filename.</span>
           </br><br>
-          <div class="muted" style="font-family:monospace;">Recent data:<br>
-          {{#each recentsamples}}
-            {{this}}<br>
-          {{/each}}
-          </div>
+          {{> recentdata}}
           {{/if}}
         </div>
         <div class="tab-pane" id="collect">
@@ -109,6 +105,12 @@
   </button>
 </template>
 
+<template name="recentdata">
+  <div class="muted" style="font-family:monospace;">Recent data:<br>
+<pre class="muted">{{#each recentsamples}}{{this}}<br>{{/each}}</pre>
+  </div>
+</template>
+
 <template name="instructions">
   <span class="muted">
     This page must remain open during capture. Change your phone settings so it never sleeps/autolocks. On iPhone go to Settings>General>Autolock. On Android go to Settings>Display>Sleep.
@@ -142,7 +144,7 @@ A sample has seven fields:<br>
 <div style="margin-left:2em">
   x, y, z are the linear accelerations (meters/sec^2)<br>
   a, b, c are the rotation rates around the x, y, and z axes respecively (degree/sec)<br>
-  t is the time the sample was taken (milliseconds)
+  t is the time the sample was writen to the database (milliseconds)
   <br><br>
 </div>
 <pre>

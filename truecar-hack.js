@@ -55,17 +55,6 @@ if (Meteor.isClient) {
     return username != "" && username != undefined;
   }
 
-  // Recent samples display
-
-  Template.body.recentsamples = function () {
-    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
-    if (s != null) {
-      return _.map(s["samples"], JSON.stringify );
-    } else {
-      return [];
-    }
-  };
-
   Template.body.events({
     'click button#clear': function () {
       var filter = user_filter();
@@ -79,6 +68,28 @@ if (Meteor.isClient) {
       console.log("Cleared samples for user: " + get_username())
     }
   });
+
+  // Recent samples display
+
+  var last_t;
+  var format_sample = function (s) {
+    //return sprintf("%d  %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c']);
+    r = sprintf("%4d %d  %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", s['t']-last_t, s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c']);
+    last_t = s['t'];
+    return r;
+  }
+
+  Template.recentdata.recentsamples = function () {
+    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
+    if (s != null) {
+      if (!last_t) {
+        last_t = s["samples"][0]['t'];        
+      }
+      return _.map(s["samples"], format_sample );
+    } else {
+      return [];
+    }
+  };
 
   // Navigation tabs
 
@@ -122,9 +133,11 @@ if (Meteor.isClient) {
     return Samples.find(user_filter()).count();
   };
 
-  Template.nsamples.recording = function () {  // ********** Is this kosher?
-    return Template.recording.recording();
-  };
+  Template.nsamples.recording = function () {
+      var username = get_username();
+      var u = Users.findOne({username: username});
+      return u != undefined && u.profile && u.profile.recording;
+  }
 
   // Set the recording state
 
@@ -188,6 +201,7 @@ if (Meteor.isClient) {
       r = 'text-warning' ;
     } else {
       r = 'text-error';
+      s = s + '!'
     }
     return new Handlebars.SafeString("<span class='" + r + "'>" + s + "</span>");
   }
