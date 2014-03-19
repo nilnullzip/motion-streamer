@@ -54,7 +54,7 @@ if (Meteor.isClient) {
         console.log("Clearing cancelled.")
         return;
       }      
-      Meteor.call("clear", filter);
+      Meteor.call("delete_samples", filter);
       //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
       console.log("Cleared samples for user: " + get_username())
     }
@@ -131,8 +131,9 @@ if (Meteor.isClient) {
   };
  
   Template.nsamples.recording = function () {
-      var username = get_username();
-      var u = Users.findOne({username: username});
+//      var username = get_username();
+//      var u = Users.findOne({username: username});
+      var u = Meteor.user();
       return u != undefined && u.profile && u.profile.recording;
   }
 
@@ -173,8 +174,9 @@ if (Meteor.isClient) {
   // The recording button
 
   Template.recording.recording = function () {
-      var username = get_username();
-      var u = Users.findOne({username: username});
+      //var username = get_username();
+      //var u = Users.findOne({username: username});
+      var u = Meteor.user();
       return u != undefined && u.profile && u.profile.recording;
   }
 
@@ -299,19 +301,14 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
 
   Meteor.methods({
-    clear: function(filter) {
+    delete_samples: function(filter) {
       var username = filter ? filter.username : "ALL";
       console.log("Clearing samples for user: " + username);
       Samples.remove(filter);
       console.log("Cleared samples for user: " + username);
     },
     set_recording: function(recording) {
-      var u = Meteor.user();
-      var username = u.username;
-      if (!username) {
-        return;
-      }
-      Users.update({username: username}, {$set: {'profile.recording': recording}});
+      Meteor.users.update(this.userId, {$set: {'profile.recording': recording}});
     },
     insert_samples: function(doc) {
       Samples.insert(doc);
@@ -324,6 +321,11 @@ if (Meteor.isServer) {
     var s = Samples.find(user_filter(username), {fields: {_id: 1}});
     var h = s.observeChanges({
       added : function (id) {
+        if (!initializing) {
+          self.changed("counts", username, {count: s.count()});          
+        }
+      },
+      removed : function (id) {
         if (!initializing) {
           self.changed("counts", username, {count: s.count()});          
         }
