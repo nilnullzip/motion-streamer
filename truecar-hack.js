@@ -2,6 +2,31 @@
 
 Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
 Users = Meteor.users;
+Counts = new Meteor.Collection("counts");
+  // Helper to get current user name
+
+  var get_username = function() {
+    var u = Meteor.user();
+    return u ? u.username : "";;
+  }
+
+  // Helper to formulate query
+ 
+  var user_filter = function (un) {
+//    u = Meteor.user();
+//    var username = u ? u.username : undefined;
+//    var username = get_username();
+    var username = un;
+    if (username == undefined) {
+      username = ""
+    }
+    if (username=="ALL") {
+      filter = {}
+    } else {
+      filter = {username: username}
+    }
+    return filter;
+  }
 
 if (Meteor.isClient) {
 
@@ -13,29 +38,6 @@ if (Meteor.isClient) {
     return val;
   });
 
-  // Helper to get current user name
-
-  var get_username = function() {
-    var u = Meteor.user();
-    return u ? u.username : "";;
-  }
-
-  // Helper to formulate query
- 
-  var user_filter = function () {
-//    u = Meteor.user();
-//    var username = u ? u.username : undefined;
-    var username = get_username();
-    if (username == undefined) {
-      username = ""
-    }
-    if (username=="ALL") {
-      filter = {}
-    } else {
-      filter = {username: username}
-    }
-    return filter;
-  }
 
   // Body functions
 
@@ -57,7 +59,7 @@ if (Meteor.isClient) {
 
   Template.body.events({
     'click button#clear': function () {
-      var filter = user_filter();
+      var filter = user_filter(get_username());
       console.log("Clearing samples for user: " + get_username())
       if (filter.username == undefined && !confirm("Really?")) {
         console.log("Clearing cancelled.")
@@ -80,7 +82,9 @@ if (Meteor.isClient) {
   }
 
   Template.recentdata.recentsamples = function () {
-    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
+    var s = Samples.findOne(user_filter(get_username()), {sort: {created_at: -1}});
+    //var s = Meteor.call('recentsamples');
+//    console.log("recentsamples: " + JSON.stringify(s))
     if (s != null) {
       if (!last_t) {
         last_t = s["samples"][0]['t'];        
@@ -130,7 +134,14 @@ if (Meteor.isClient) {
   // Live display of number of samples
 
   Template.nsamples.nsamples = function () {
-    return Samples.find(user_filter()).count();
+    //return Samples.find(user_filter(get_username()), {fields: {_id: 1}}).count();
+    var s = Counts.findOne();
+//    console.log("nsamples: " + s);
+    if (s) {
+      return s.count;
+    } else {
+      return "nsamples:xxx"
+    }
   };
 
   Template.nsamples.recording = function () {
@@ -146,9 +157,10 @@ if (Meteor.isClient) {
     if (!username) {
       return;
     }
-    if (recording && Samples.find(user_filter()).count()) {
+//    if (recording && Samples.find(user_filter(get_username()), {fields: {_id: 1}}).count()) {
+    if (recording && Counts.findOne() && Counts.findOne().count) {
       alert("Please delete samples first.");
-      return;
+//      return;   // ***************** Disabled for debug purposes. Uncomment!
     }
     //console.log("set_recording: " + recording)
     Meteor.call("set_recording", recording);
@@ -173,7 +185,7 @@ if (Meteor.isClient) {
   }
 
   Deps.autorun(function(){
-    var s = Samples.findOne(user_filter(), {sort: {created_at: -1}});
+    var s = Samples.findOne(user_filter(get_username()), {sort: {created_at: -1}});
     reset_timeout(true);
   });
 
@@ -224,6 +236,14 @@ if (Meteor.isClient) {
 
   // At startup set up device motion event handler.
 
+  Deps.autorun(function () {
+    Meteor.subscribe ("counts", get_username());
+  });
+
+  Deps.autorun(function () {
+    Meteor.subscribe ("last_record", get_username());
+  });
+ 
   Meteor.startup(function () {
 
     Accounts.ui.config({
@@ -287,7 +307,8 @@ if (Meteor.isClient) {
         if (samples.length >= 20) {
           created_at = t;
           var username = get_username();
-          Samples.insert({samples: samples, created_at: created_at, username: username});
+          //Samples.insert({samples: samples, created_at: created_at, username: username});
+          Meteor.call('insert_samples', {samples: samples, created_at: created_at, username: username});
           samples = [];
         }
       }
@@ -312,9 +333,41 @@ if (Meteor.isServer) {
         return;
       }
       Users.update({username: username}, {$set: {'profile.recording': recording}});
+    },
+    insert_samples: function(doc) {
+      Samples.insert(doc);
     }
   });
 
+  Meteor.publish("counts", function (username) {
+    var initializing = true;
+    var self = this;
+    var s = Samples.find(user_filter(username), {fields: {_id: 1}});
+    var h = s.observeChanges({
+      added : function (id) {
+        if (!initializing) {
+          self.changed("counts", username, {count: s.count()});          
+        }
+      }
+    });
+    var count = s.count();
+    initializing = false;
+    console.log("publish counts: " + count + " " + username);
+    this.added("counts", username, {count: count});
+    this.ready();
+  });
+
+  Meteor.publish("last_record", function (username) {
+    console.log("last_record called: " + username)
+    var s = Samples.find(user_filter(username), {sort: {created_at: -1}, limit: 1});
+    console.log("last_record count " + s.count());
+    s.forEach(function(a) {
+      //console.log("last_record: " + JSON.stringify(a));
+    });
+    s.rewind();
+    return s;
+  });
+ 
   Meteor.startup(function () {
     Samples._ensureIndex({created_at: -1, username: 1})
   });
