@@ -1,7 +1,6 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
 
 Samples = new Meteor.Collection("samples"); // The sample collection
-Users = Meteor.users; // Users collection
 Counts = new Meteor.Collection("counts"); // Special counts collection
 
 // Helper to get current user name
@@ -49,14 +48,14 @@ if (Meteor.isClient) {
   Template.body.events({
     'click button#clear': function () {
       var filter = user_filter(get_username());
-      console.log("Clearing samples for user: " + get_username())
+//      console.log("Clearing samples for user: " + get_username())
       if (filter.username == undefined && !confirm("Really?")) {
-        console.log("Clearing cancelled.")
+        //console.log("Deleting samples cancelled.")
         return;
       }      
       Meteor.call("delete_samples", filter);
       //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
-      console.log("Cleared samples for user: " + get_username())
+//      console.log("Cleared samples for user: " + get_username())
     }
   });
 
@@ -303,9 +302,9 @@ if (Meteor.isServer) {
   Meteor.methods({
     delete_samples: function(filter) {
       var username = filter ? filter.username : "ALL";
-      console.log("Clearing samples for user: " + username);
+      //console.log("Deleting samples for user: " + username);
       Samples.remove(filter);
-      console.log("Cleared samples for user: " + username);
+      //console.log("Deleted samples for user: " + username);
     },
     set_recording: function(recording) {
       Meteor.users.update(this.userId, {$set: {'profile.recording': recording}});
@@ -316,10 +315,10 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish("counts", function (username) {
-    var initializing = true;
-    var self = this;
+    var initializing = true; // Not sure if this is needed. Copied from example.
+    var self = this; // Needed to capture value of this for function closures.
     var s = Samples.find(user_filter(username), {fields: {_id: 1}});
-    var h = s.observeChanges({
+    var handle = s.observeChanges({
       added : function (id) {
         if (!initializing) {
           self.changed("counts", username, {count: s.count()});          
@@ -334,8 +333,11 @@ if (Meteor.isServer) {
     var count = s.count();
     initializing = false;
     console.log("publish counts: " + count + " " + username);
-    this.added("counts", username, {count: count});
-    this.ready();
+    self.added("counts", username, {count: count});
+    self.ready();
+    self.onStop(function () {
+      handle.stop();
+    });
   });
 
   Meteor.publish("recent_samples", function (username) {
