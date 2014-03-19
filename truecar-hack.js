@@ -1,20 +1,21 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
 
-Samples = new Meteor.Collection("samples"); // Get/create MongoDB collection
-Users = Meteor.users;
-Counts = new Meteor.Collection("counts");
-  // Helper to get current user name
+Samples = new Meteor.Collection("samples"); // The sample collection
+Users = Meteor.users; // Users collection
+Counts = new Meteor.Collection("counts"); // Special counts collection
 
-  var get_username = function() {
-    var u = Meteor.user();
-    return u ? u.username : "";;
-  }
+// Helper to get current user name
 
-  // Helper to formulate query
- 
-  var user_filter = function (username) {
-    return username=="ALL" ? {} : {username: username==undefined ? "" : username};
-  }
+var get_username = function() {
+  var u = Meteor.user();
+  return u ? u.username : "";;
+}
+
+// Helper to formulate query
+
+var user_filter = function (username) {
+  return username=="ALL" ? {} : {username: username==undefined ? "" : username};
+}
 
 if (Meteor.isClient) {
 
@@ -71,8 +72,6 @@ if (Meteor.isClient) {
 
   Template.recentdata.recentsamples = function () {
     var s = Samples.findOne(user_filter(get_username()), {sort: {created_at: -1}});
-    //var s = Meteor.call('recentsamples');
-//    console.log("recentsamples: " + JSON.stringify(s))
     if (s != null) {
       if (!last_t) {
         last_t = s["samples"][0]['t'];        
@@ -122,16 +121,15 @@ if (Meteor.isClient) {
   // Live display of number of samples
 
   Template.nsamples.nsamples = function () {
-    //return Samples.find(user_filter(get_username()), {fields: {_id: 1}}).count();
-    var s = Counts.findOne();
-//    console.log("nsamples: " + s);
-    if (s) {
-      return s.count;
-    } else {
-      return "nsamples:xxx"
-    }
+    var s = Counts.findOne(); // This can return null during startup!
+    return s ? s.count : "nsamples: Oops!"
+//    if (s) {
+//      return s.count;
+//    } else {
+//      return "Oops!"
+//    }
   };
-
+ 
   Template.nsamples.recording = function () {
       var username = get_username();
       var u = Users.findOne({username: username});
@@ -145,12 +143,10 @@ if (Meteor.isClient) {
     if (!username) {
       return;
     }
-//    if (recording && Samples.find(user_filter(get_username()), {fields: {_id: 1}}).count()) {
     if (recording && Counts.findOne() && Counts.findOne().count) {
       alert("Please delete samples first.");
 //      return;   // ***************** Disabled for debug purposes. Uncomment!
     }
-    //console.log("set_recording: " + recording)
     Meteor.call("set_recording", recording);
     reset_timeout(recording);
   }
@@ -162,12 +158,9 @@ if (Meteor.isClient) {
     clearTimeout(timeout);
 //    return; // ***************** DEBUG *****************
     if (!recording) {
-      //console.log("reset_timeout: canceling check.");
       return;
     }
-    //console.log("Setting recording timeout")
     timeout = Meteor.setTimeout(function(){
-      //console.log("Setting record button to record")
       set_recording(false);
     }, 10000)
   }
@@ -182,13 +175,11 @@ if (Meteor.isClient) {
   Template.recording.recording = function () {
       var username = get_username();
       var u = Users.findOne({username: username});
-//      console.log("recording: " + JSON.stringify(u))
       return u != undefined && u.profile && u.profile.recording;
   }
 
   Template.recording.events({
     'click button#startstop': function () {
-      //if ($("#startstop").text() == "Record") {
       set_recording(!Template.recording.recording());
     }
   });
@@ -229,7 +220,7 @@ if (Meteor.isClient) {
   });
 
   Deps.autorun(function () {
-    Meteor.subscribe ("last_record", get_username());
+    Meteor.subscribe ("recent_samples", get_username());
   });
  
   Meteor.startup(function () {
@@ -238,7 +229,6 @@ if (Meteor.isClient) {
       passwordSignupFields: 'USERNAME_ONLY'
     });
 
-    //Session.set("radio_value", $("input:radio[name=display]:checked").val())
     var timestamp = 0;
     var samples = [];
 
@@ -307,6 +297,7 @@ if (Meteor.isClient) {
 // Server
 
 if (Meteor.isServer) {
+
   Meteor.methods({
     clear: function(filter) {
       var username = filter ? filter.username : "ALL";
@@ -345,17 +336,13 @@ if (Meteor.isServer) {
     this.ready();
   });
 
-  Meteor.publish("last_record", function (username) {
-    console.log("last_record called: " + username)
+  Meteor.publish("recent_samples", function (username) {
     var s = Samples.find(user_filter(username), {sort: {created_at: -1}, limit: 1});
-    console.log("last_record count " + s.count());
-    s.forEach(function(a) {
-      //console.log("last_record: " + JSON.stringify(a));
-    });
+    console.log("recent_samples: " + username + " " + s.count());
     s.rewind();
     return s;
   });
- 
+
   Meteor.startup(function () {
     Samples._ensureIndex({created_at: -1, username: 1})
   });
