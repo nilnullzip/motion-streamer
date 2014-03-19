@@ -10,3 +10,4 @@ iron-router
 bootstrap
 accounts-ui
 accounts-password
+showdown

@@ -26,6 +26,10 @@ if (Meteor.isClient) {
     return val;
   });
 
+  Handlebars.registerHelper('origin',function(){
+    return window.location.origin
+  });
+
   // Body functions
 
   Template.body.activetab = function (t) {
