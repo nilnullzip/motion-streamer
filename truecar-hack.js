@@ -12,20 +12,8 @@ Counts = new Meteor.Collection("counts");
 
   // Helper to formulate query
  
-  var user_filter = function (un) {
-//    u = Meteor.user();
-//    var username = u ? u.username : undefined;
-//    var username = get_username();
-    var username = un;
-    if (username == undefined) {
-      username = ""
-    }
-    if (username=="ALL") {
-      filter = {}
-    } else {
-      filter = {username: username}
-    }
-    return filter;
+  var user_filter = function (username) {
+    return username=="ALL" ? {} : {username: username==undefined ? "" : username};
   }
 
 if (Meteor.isClient) {
