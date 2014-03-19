@@ -1,7 +1,7 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
 
 Samples = new Meteor.Collection("samples"); // The sample collection
-Counts = new Meteor.Collection("counts"); // Special counts collection
+Counts = new Meteor.Collection("counts");   // Non Mongo counts collection
 
 // Helper to get current user name
 
@@ -25,7 +25,6 @@ if (Meteor.isClient) {
     //console.log("sessionvar: " + v + "=" + val)
     return val;
   });
-
 
   // Body functions
 
