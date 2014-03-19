@@ -14,14 +14,15 @@ Based on HTML5 accelerometer interface and Meteor web framework.
     
     # clone acc-meteor
     git clone git@github.com:nilnullzip/acc-meteor.git
-    
-    # run local Meteor server
+
+    # install required meteorite packages    
     cd acc-meteor
+    mrt install
+
+    # run local Meteor server
     meteor
 
-At this point the app will be running on the dev machine and can be accessed at: http://localhost:3000/. Your machine will likely not support the accelerometer, so it won't capture any samples. However, it will be able to view the database.
-
-Now open the app page on your mobile phone. (Obviously will need to substitute your dev machine's IP address in the URL.) You should see a lively display of changing data/info. The page opened on the server will show the data changing live as it is saved in the database.
+At this point the app server will be running on your dev machine. Open the app page at: http://localhost:3000/ and log in. Then open the app page from your mobile phone (subsituting your dev machine's IP address for 'localhost') and log in using the same username. Follow directions in the app and have fun!
 
 ### Access the database
 
