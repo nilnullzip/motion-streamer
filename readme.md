@@ -22,7 +22,7 @@ Based on HTML5 accelerometer interface and Meteor web framework.
     # run local Meteor server
     meteor
 
-At this point the app server will be running on your dev machine. Open the app page on your dev machine at: http://localhost:3000/ and log in. Then open the app page from your mobile phone (subsituting your dev machine's IP address for 'localhost') and log in. Follow directions in the app and have fun!
+At this point the app server will be running on your dev machine. Open the app page at: http://localhost:3000/ and log in. Then open the app page from your mobile phone (subsituting your dev machine's IP address for 'localhost') and log in using the same username. Follow directions in the app and have fun!
 
 ### Access the database
 
