@@ -14,9 +14,12 @@ Based on HTML5 accelerometer interface and Meteor web framework.
     
     # clone acc-meteor
     git clone git@github.com:nilnullzip/acc-meteor.git
-    
-    # run local Meteor server
+
+    # install required meteorite packages    
     cd acc-meteor
+    mrt install
+
+    # run local Meteor server
     meteor
 
 At this point the app will be running on the dev machine and can be accessed at: http://localhost:3000/. Your machine will likely not support the accelerometer, so it won't capture any samples. However, it will be able to view the database.
