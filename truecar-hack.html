@@ -21,7 +21,7 @@
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
-          <span class="muted">Set your laptop on this tab to control the capture from your phone.</span>
+          <span class="muted">Set your laptop on this tab to control the capture of motion data from your phone.</span>
           <br><br>
           {{> recording}}
           <a href="/json/{{username}}" target="_blank">
@@ -75,7 +75,7 @@ This device does not support motion.
   <ul class="nav nav-tabs" id="maintabs">
     <li><a id="reviewtab" href="#review" data-toggle="tab">Laptop</a></li>
     <li><a id="collecttab" href="#collect" data-toggle="tab">Phone</a></li>
-    <li><a id="pythontab" href="#python" data-toggle="tab">Python</a></li>
+    <li><a id="pythontab" href="#python" data-toggle="tab">Stream</a></li>
   </ul>
 </template>
 
@@ -146,7 +146,7 @@ A sample has seven fields:
 * a, b, c are the rotation rates around the x, y, and z axes respecively (degree/sec)
 * t is the time the sample was writen to the database (milliseconds)
 
-The time t is helpful to check to make sure that the stream was captured uninterrupted and also to check that the phone is working well. Note that the value jitters around maybe 100-200ms because of processing delays. However the samples are actually captured with a uniform 50ms period.
+The time t is helpful to verify that the stream was captured uninterrupted. Also to verify that the phone is not overloaded. Note that the value jitters around 100-200ms because of processing delays. However the samples are actually captured at a uniform 20Hz (50ms) rate.
 
 {{/markdown}}
 {{#markdown}}
