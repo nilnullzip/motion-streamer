@@ -66,7 +66,6 @@ if (Meteor.isClient) {
 
   var last_t;
   var format_sample = function (s) {
-    //return sprintf("%d  %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c']);
     r = sprintf("%4d %d  %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", s['t']-last_t, s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c']);
     last_t = s['t'];
     return r;
@@ -244,13 +243,13 @@ if (Meteor.isClient) {
 
         device_motion_timout = 0;
 
-        var s = "";
+        var s = "Raw motion data:<br><br>";
 
-        // Measure sample interval and siplay on page
+        // Measure sample interval and display on page
 
         var t = Date.now();
-        s += "measured sample period: " + (t - timestamp) + " ms<br>";
-        s += "API sample period: " + Math.floor(e.interval*1000) + " ms<br>";
+        s += sprintf("Sample period:     %3.0f ms<br>", (t - timestamp));
+        s += sprintf("API sample period: %3.0f ms<br><br>", Math.floor(e.interval*1000));
         timestamp = t
 
         // Create the sample
@@ -270,14 +269,13 @@ if (Meteor.isClient) {
 
         if (!Template.recording.recording() || Session.get("tabs") != "#collect") {
           samples = [];
-          s += "accx: " + sample.x + "<br/>";
-          s += "accy: " + sample.y + "<br/>";
-          s += "accz: " + sample.z + "<br/>";
+
+          s += sprintf("Time: %f<br><br>", sample['t']);
+          s += sprintf("Acc:  %6.2f %6.2f %6.2f<br>", sample['x'], sample['y'], sample['z']);
           if ( e.rotationRate ) {
-            s += "rota: " + sample.a + "<br/>";
-            s += "rota: " + sample.b + "<br/>";
-            s += "rota: " + sample.b + "<br/>";
+          s += sprintf("Rot:  %6.1f %6.1f %6.1f<br>", sample['a'], sample['b'], sample['c']);
           }
+
           $("#accxyz").html(s);
           return;
         }

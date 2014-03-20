@@ -47,8 +47,9 @@
           <br><br>
           {{> instructions}}
           <br>
-          <span class="muted">Raw motion data:</span>
-          <div id="accxyz" class="muted" style="font-family:monospace;">This device does not support motion.</div>
+<pre id="accxyz" class="muted">
+This device does not support motion.
+</pre>
           {{/if}}
         </div>
         <div class="tab-pane" id="python">
@@ -72,8 +73,8 @@
 
 <template name="tabs">
   <ul class="nav nav-tabs" id="maintabs">
-    <li><a id="collecttab" href="#collect" data-toggle="tab">Phone</a></li>
     <li><a id="reviewtab" href="#review" data-toggle="tab">Laptop</a></li>
+    <li><a id="collecttab" href="#collect" data-toggle="tab">Phone</a></li>
     <li><a id="pythontab" href="#python" data-toggle="tab">Python</a></li>
   </ul>
 </template>
