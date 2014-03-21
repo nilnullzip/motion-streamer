@@ -344,8 +344,8 @@ Router.map(function () {
 
     action: function () {
       var username = this.params.username;
-      console.log("JSON: username: " + username);
-      console.log("JSON: n: " + this.params.n);
+      //console.log("JSON: username: " + username);
+      //console.log("JSON: n: " + this.params.n);
       var filter = {}
 
       if (username != "ALL") {
@@ -354,11 +354,11 @@ Router.map(function () {
 
       var t = this.params.t;
       if (t != undefined) {
-        console.log("JSON: from time: " + t)
+        //console.log("JSON: from time: " + t)
         filter['created_at'] = {$gt : parseInt(t)};
       }
 
-      console.log("JSON: query: " + JSON.stringify(filter));
+      //console.log("JSON: query: " + JSON.stringify(filter));
       var seconds = this.params.n;
       var skip = 0; // Default skip nothing
       if (seconds != undefined) {
