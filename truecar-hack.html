@@ -33,8 +33,6 @@
           <br><br>
           {{> nsamples}}
           </br><br>
-          <span class="muted">Note: right click on the download button to specify a filename.</span>
-          </br><br>
           {{> recentdata}}
           {{/if}}
         </div>
@@ -98,6 +96,10 @@ Sign in with same username on both phone and laptop.
 <template name="recentdata">
   <div class="muted">
 {{#markdown}}
+#####Instructions
+Right click on the download button to specify a filename.
+
+Recording limited to {{time_limit}} seconds.
 #####Capture status
 {{/markdown}}
 <pre class="muted">
@@ -158,9 +160,9 @@ A sample has seven fields:
 
 * x, y, z are the linear accelerations (meters/sec^2)
 * a, b, c are the rotation rates around the x, y, and z axes respecively (degrees/sec *)
-* t is the time the sample was writen to the database (milliseconds)
+* t is the timestamp for when sample was writen to the database (milliseconds)
 
-The time t is helpful to verify that the stream was captured uninterrupted. Also to verify that the phone is not overloaded. Note that the value jitters around 100-200ms because of processing delays. However the samples are actually captured at a uniform 20Hz (50ms) rate.
+The timestamp is helpful to verify that the stream was captured uninterrupted. Also to verify that the phone is not overloaded. Note that the timestamp typically jitters around 100-200ms because of processing delays. However the samples are actually taken at a more uniform rate.
 
 (*) Maybe the rotation rate units are not standardized. IOS appears to use degrees/sec. But Android seems to use a much smaller scale, perhaps radians/sec.
 

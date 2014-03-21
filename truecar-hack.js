@@ -78,6 +78,10 @@ if (Meteor.isClient) {
     }
   };
 
+  Template.recentdata.time_limit = function () {
+    return time_limit;
+  }
+
   // Navigation tabs
 
   $(window).bind('hashchange', function() {
@@ -114,9 +118,14 @@ if (Meteor.isClient) {
   
   // Live display of number of samples
 
+  var time_limit = 10 * 60;
+
   Template.nsamples.nsamples = function () {
     var s = Counts.findOne(); // This can return null during startup!
-    return s ? s.count : "nsamples: Oops!"
+    if (!s) return "nsamples: Oops!";
+    var count = s.count;
+    if (count>time_limit) set_recording(false); // Limit recording time.
+    return count;
   };
  
   Template.nsamples.recording = function () {
@@ -129,7 +138,7 @@ if (Meteor.isClient) {
   var set_recording = function(recording) {
     if (recording && Counts.findOne() && Counts.findOne().count) {
       alert("Please delete samples first.");
-//      return;   // ***************** Disabled for debug purposes. Uncomment!
+      if (Meteor.user().username != "Juan") return;
     }
     Meteor.users.update(Meteor.userId(), {$set: {'profile.recording': recording}});
 
