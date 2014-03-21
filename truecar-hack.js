@@ -58,7 +58,10 @@ if (Meteor.isClient) {
 
   var last_t;
   var format_sample = function (s) {
-    r = sprintf("%4d %d  %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", s['t']-last_t, s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c']);
+    r = sprintf("%4d %d  %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", 
+      s['t']-last_t, s['t'], 
+      s['x'], s['y'], s['z'],
+      s['a'], s['b'], s['c']);
     last_t = s['t'];
     return r;
   }
@@ -177,7 +180,7 @@ if (Meteor.isClient) {
     }
     return new Handlebars.SafeString("<span class='" + r + "'>" + s + "</span>");
   }
- 
+
   var device_motion_timout = 0;
 
   $(Meteor.setInterval(function(){
@@ -187,11 +190,15 @@ if (Meteor.isClient) {
   // At startup set up device motion event handler.
 
   Deps.autorun(function () {
-    Meteor.subscribe ("counts", get_username());
+    var username = get_username();
+    if (!username) return;
+    Meteor.subscribe ("counts", username);
   });
 
   Deps.autorun(function () {
-    Meteor.subscribe ("recent_samples", get_username());
+    var username = get_username();
+    if (!username) return;
+    Meteor.subscribe ("recent_samples", username);
   });
  
   Meteor.startup(function () {
@@ -274,7 +281,7 @@ if (Meteor.isServer) {
   });
 
   Meteor.methods({
-    // Needed because Meteor does not allow client to delete multiple documents
+    // Because Meteor does not allow client to delete multiple documents
     delete_samples: function(filter) {
       Samples.remove(filter);
     }
@@ -298,7 +305,7 @@ if (Meteor.isServer) {
     });
     var count = s.count();
     initializing = false;
-    console.log("publish counts: " + count + " " + username);
+    console.log("publish counts: " + username + " " + count);
     self.added("counts", username, {count: count});
     self.ready();
     self.onStop(function () {
