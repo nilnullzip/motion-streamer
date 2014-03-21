@@ -3,13 +3,13 @@
 import urllib2
 import json
 import time
+import sys
 
-# Replace with your username
+# Replace with your username and server
 
 username = "Demo"
-
-server = "truecar-hack.meteor.com"
-#server = "localhost:3000"
+#server = "truecar-hack.meteor.com"
+server = "localhost:3000"
 
 # Process a sample -- replace with your processing function
 
@@ -18,8 +18,13 @@ samples = []
 def process_sample (s) :
 	global last_t
 	samples.append(s)
+	delta = s['t'] - last_t
+	if delta > 1000 :
+		print "Discontinuity %d ms" % delta
+	elif delta > 200 :
+		print "Delayed"
 	print '%3d %d %6.2f %6.2f %6.2f  %6.2f %6.2f %6.2f' % \
-		(s['t'] - last_t, s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c'])
+		(delta, s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c'])
 	last_t = s['t']
 
 # Stream data from server
@@ -28,15 +33,20 @@ def stream () :
 	t = 0
 	url = 'http://' + server + '/json/' + username
 	while True :
-		u = url + "?t=" + ("%d"%t)
-		#print "downloading from t=%d" % t
-		#print "url = " + u
+		# t asks for samples since that timestamp
+		# n limits the number of seconds returned
+		u = url + "?t=" + ("%d"%t) + "&n=10"
 		response = urllib2.urlopen(u)
-		data = json.load(response)
-		if data :
-			for s in data :
-				process_sample (s)
-			t = data[-1]['t']
+		json_text = response.read()
+		if (len(json_text)>2) :
+			data = json.loads(json_text)
+			if data :
+				for s in data :
+					process_sample (s)
+				t = data[-1]['t']
+		else :
+			print "\rwaiting...\r",
+			sys.stdout.flush()
 		time.sleep(1)
 
 stream ()

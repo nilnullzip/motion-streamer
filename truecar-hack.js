@@ -359,22 +359,18 @@ Router.map(function () {
       }
 
       console.log("JSON: query: " + JSON.stringify(filter));
-      var n = this.params.n;
-      var records = n
-      if (n != undefined) {
-        records = Math.ceil(n/20);
+      var seconds = this.params.n;
+      var skip = 0; // Default skip nothing
+      if (seconds != undefined) {
+        var nrecords = Samples.find(filter).count();
+        seconds = Math.max(seconds, 2); // Need at least two seconds for slop
+        skip = Math.max(0, nrecords-seconds);
       }
-      var samples = Samples.find(filter, {sort: {created_at: -1}, limit: records});
+      var samples = Samples.find(filter, {sort: {created_at: 1}, skip: skip});
       var l = [];
       samples.forEach(function (s) {
-        l = l.concat(s.samples.reverse());
+        l = l.concat(s.samples);
       });
-
-      if (n != undefined) {
-        l = l.slice(0,n);
-      }
-
-      l.reverse()
 
       this.response.writeHead(200, {'Content-Type': 'application/json', 'Content-Disposition': 'attachment'});
       this.response.end(JSON.stringify(l));
