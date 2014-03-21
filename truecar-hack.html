@@ -46,10 +46,6 @@
           {{> nsamples}}
           <br><br>
           {{> instructions}}
-          <br>
-<pre id="accxyz" class="muted">
-This device does not support motion.
-</pre>
           {{/if}}
         </div>
         <div class="tab-pane" id="python">
@@ -57,11 +53,12 @@ This device does not support motion.
         </div>
       </div>
       {{else}}
-      <br>
-      <br>
       <div>
-        Use this app to capture motion data from your phone onto your laptop.<br><br>
-        Sign in with same username on both phone and laptop.
+{{#markdown}}
+Use this app to capture motion data from your phone onto your laptop for download or streaming.
+
+Sign in with same username on both phone and laptop.
+{{/markdown}}
       </div>
       {{/if}}
       <hr>
@@ -99,8 +96,14 @@ This device does not support motion.
 </template>
 
 <template name="recentdata">
-  <div class="muted" style="font-family:monospace;">Recent data:<br>
-<pre class="muted">{{#each recentsamples}}{{this}}<br>{{/each}}</pre>
+  <div class="muted">
+{{#markdown}}
+#####Capture status
+{{/markdown}}
+<pre class="muted">
+delta  timestamp       x      y      z         a      b      c
+-----  ---------      ---    ---    ---       ---    ---    ---
+{{#each recentsamples}}{{this}}<br>{{/each}}</pre>
   </div>
 </template>
 
@@ -108,14 +111,25 @@ This device does not support motion.
   <span class="muted">
 {{#markdown}}
 
-This page must remain open and active during capture. Change your phone settings so it never sleeps/autolocks:
+#####Instructions
+
+Change your phone settings so it never sleeps/autolocks to ensure that page is displayed without interruption:
 
 - On iPhone go to Settings>General>Autolock.
 - On Android go to Settings>Display>Sleep.
 
-You might want to tape some cardboard to the face of your phone to prevent random touches from affecting the page while the phone is in your pocket.
+Disable portrait/landscape auto rotate to minimize unnecssary processing load.
 
-Important: make sure you have only one phone on this tab at a time! Otherwise you will simultaneously capture from multiple phones and thus corrupt the capture.
+- On iPhone swipe up from bottom of screen and look for icon with padlock enclosed in circular arrow.
+
+Tape cardboard to the face of your phone to prevent random touches from affecting the page while phone is in your pocket.
+
+Ensure only one phone on this tab at a time, otherwise data will be simultaneously captured from multiple phones resulting in nonsense.
+<br><br>
+#####Device motion status
+<pre id="accxyz" class="muted">
+This device does not support motion.
+</pre>
 {{/markdown}}
   </span>
 </template>
@@ -143,10 +157,12 @@ You can stream and process the motion data in real time. Use the following Pytho
 A sample has seven fields:
 
 * x, y, z are the linear accelerations (meters/sec^2)
-* a, b, c are the rotation rates around the x, y, and z axes respecively (degree/sec)
+* a, b, c are the rotation rates around the x, y, and z axes respecively (degrees/sec *)
 * t is the time the sample was writen to the database (milliseconds)
 
 The time t is helpful to verify that the stream was captured uninterrupted. Also to verify that the phone is not overloaded. Note that the value jitters around 100-200ms because of processing delays. However the samples are actually captured at a uniform 20Hz (50ms) rate.
+
+(*) Maybe the rotation rate units are not standardized. IOS appears to use degrees/sec. But Android seems to use a much smaller scale, perhaps radians/sec.
 
 {{/markdown}}
 <pre>
