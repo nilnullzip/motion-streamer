@@ -22,7 +22,6 @@ if (Meteor.isClient) {
 
   Handlebars.registerHelper('sessionvar',function(v){
     var val = Session.get(v);
-    //console.log("sessionvar: " + v + "=" + val)
     return val;
   });
 
@@ -41,24 +40,17 @@ if (Meteor.isClient) {
   }
 
   Template.body.has_username = function () {
-    //console.log("has_username: " + get_username());
     var username = get_username();
-    //u = Meteor.user();
-    //var username = u ? u.username : undefined;
     return username != "" && username != undefined;
   }
 
   Template.body.events({
     'click button#clear': function () {
       var filter = user_filter(get_username());
-//      console.log("Clearing samples for user: " + get_username())
       if (filter.username == undefined && !confirm("Really?")) {
-        //console.log("Deleting samples cancelled.")
         return;
       }      
       Meteor.call("delete_samples", filter);
-      //Samples.find(filter).forEach(function(d){Samples.remove(d._id)});
-//      console.log("Cleared samples for user: " + get_username())
     }
   });
 
@@ -110,8 +102,6 @@ if (Meteor.isClient) {
     // Initialize the tab
 
     if (Session.get("tabs")) {
-      //console.log("Template.tabs.rendered: tabs=" + Session.get("tabs"))
-      //$('#maintabs #' + Session.get("tabs")).tab("show");
       $('#maintabs ' + Session.get("tabs") + "tab").tab("show");
     } else {
       $('#maintabs a[data-toggle="tab"]:first').tab("show");
@@ -124,32 +114,22 @@ if (Meteor.isClient) {
   Template.nsamples.nsamples = function () {
     var s = Counts.findOne(); // This can return null during startup!
     return s ? s.count : "nsamples: Oops!"
-//    if (s) {
-//      return s.count;
-//    } else {
-//      return "Oops!"
-//    }
   };
  
   Template.nsamples.recording = function () {
-//      var username = get_username();
-//      var u = Users.findOne({username: username});
-      var u = Meteor.user();
-      return u != undefined && u.profile && u.profile.recording;
+    var u = Meteor.user();
+    return u != undefined && u.profile && u.profile.recording;
   }
 
   // Set the recording state
 
   var set_recording = function(recording) {
-    var username = get_username();
-    if (!username) {
-      return;
-    }
     if (recording && Counts.findOne() && Counts.findOne().count) {
       alert("Please delete samples first.");
 //      return;   // ***************** Disabled for debug purposes. Uncomment!
     }
-    Meteor.call("set_recording", recording);
+    Meteor.users.update(Meteor.userId(), {$set: {'profile.recording': recording}});
+
     reset_timeout(recording);
   }
 
@@ -175,8 +155,6 @@ if (Meteor.isClient) {
   // The recording button
 
   Template.recording.recording = function () {
-      //var username = get_username();
-      //var u = Users.findOne({username: username});
       var u = Meteor.user();
       return u != undefined && u.profile && u.profile.recording;
   }
@@ -200,16 +178,6 @@ if (Meteor.isClient) {
     return new Handlebars.SafeString("<span class='" + r + "'>" + s + "</span>");
   }
  
-  // Disable record button
-/*
-  Template.recording.rendered = function () {
-    if (device_motion_timout) {
-      $("#collect button#startstop").attr("disabled", "")
-    } else {
-      $("#collect button#startstop").attr("disabled", null)      
-    }
-  }
-*/
   var device_motion_timout = 0;
 
   $(Meteor.setInterval(function(){
@@ -287,8 +255,7 @@ if (Meteor.isClient) {
         if (samples.length >= 20) {
           created_at = t;
           var username = get_username();
-          //Samples.insert({samples: samples, created_at: created_at, username: username});
-          Meteor.call('insert_samples', {samples: samples, created_at: created_at, username: username});
+          Samples.insert({samples: samples, created_at: created_at, username: username});
           samples = [];
         }
       }
@@ -300,18 +267,16 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
 
+  Samples.allow({
+    insert: function (id, doc) { // Allow user to delete their own documents
+      return doc.username == Meteor.user().username;
+    }
+  });
+
   Meteor.methods({
+    // Needed because Meteor does not allow client to delete multiple documents
     delete_samples: function(filter) {
-      var username = filter ? filter.username : "ALL";
-      //console.log("Deleting samples for user: " + username);
       Samples.remove(filter);
-      //console.log("Deleted samples for user: " + username);
-    },
-    set_recording: function(recording) {
-      Meteor.users.update(this.userId, {$set: {'profile.recording': recording}});
-    },
-    insert_samples: function(doc) {
-      Samples.insert(doc);
     }
   });
 
@@ -392,7 +357,6 @@ Router.map(function () {
       if (n != undefined) {
         records = Math.ceil(n/20);
       }
-      //console.log ("records: " + records)
       var samples = Samples.find(filter, {sort: {created_at: -1}, limit: records});
       var l = [];
       samples.forEach(function (s) {
