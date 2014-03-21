@@ -182,14 +182,20 @@ if (Meteor.isClient) {
     s = Meteor.status()['status']
     if (s=="connected") {
       r = 'muted' ;
+      $('#statusModal').modal('hide');
     } else if (s=="connecting") {
       r = 'text-warning' ;
+      $('#statusModal').modal('show');
     } else {
       r = 'text-error';
       s = s + '!'
+      $('#statusModal').modal('show');
     }
+    $('#statusModal #statusModalLabel').html("<span class='" + r + "'>Server status: " + s + "</span>");
     return new Handlebars.SafeString("<span class='" + r + "'>" + s + "</span>");
   }
+
+  Deps.autorun(Template.status.status);
 
   var device_motion_timout = 0;
 
