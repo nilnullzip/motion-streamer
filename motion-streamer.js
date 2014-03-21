@@ -314,7 +314,7 @@ if (Meteor.isServer) {
     });
     var count = s.count();
     initializing = false;
-    console.log("publish counts: " + username + " " + count);
+    //console.log("publish counts: " + username + " " + count);
     self.added("counts", username, {count: count});
     self.ready();
     self.onStop(function () {
@@ -324,7 +324,7 @@ if (Meteor.isServer) {
 
   Meteor.publish("recent_samples", function (username) {
     var s = Samples.find(user_filter(username), {sort: {created_at: -1}, limit: 1});
-    console.log("recent_samples: " + username + " " + s.count());
+    //console.log("recent_samples: " + username + " " + s.count());
     s.rewind();
     return s;
   });
