@@ -1,4 +1,5 @@
 // Collect accelerometer samples and save to MongoDB collection named "samples".
+// Copyright 2014 Juan Pineda. See LICENSE (MIT) file.
 
 Samples = new Meteor.Collection("samples"); // The sample collection
 Counts = new Meteor.Collection("counts");   // Non Mongo counts collection
