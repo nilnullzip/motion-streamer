@@ -1,5 +1,5 @@
 run:
 	meteor
 
-deploy:
-	meteor deploy truecar-hack
+stream:
+	cd test; python motion-streamer.py
