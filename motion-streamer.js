@@ -83,38 +83,32 @@ if (Meteor.isClient) {
     return time_limit;
   }
 
-  // Navigation tabs
-
-  $(window).bind('hashchange', function() {
-    console.log("hashchange: " + location.hash);
-    Session.set("tabs", location.hash);
-  });
+  // Handle history via location hash
 
   $(window).bind('popstate', function() {
-    //console.log("popstate: " + location.hash);
     Session.set("tabs", location.hash);
   });
 
-  Template.tabs.rendered = function () {
-    //console.log("Template.tabs.rendered.")
+  // Navigation tab wiring
 
-    // Trigger when tab changes
+  Template.tabs.rendered = function () {
+
+    // Handler to set tabs session variable whenever tab is shown
 
     $('#maintabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      //console.log("BS: " + e.target.hash);
       Session.set("tabs", e.target.hash);
-//      console.log("BS: " + location.hash);
-//      Session.set("tabs", location.hash);
     });
 
-    // Initialize the tab
+    // Explicitly show tab content 
+    // because the Bootstrap data-toggle mechanism doesn't work with Meteor
+    // because tab content is not rendered before the toggle is executed.
+    // Maybe unnecessary with Meteor 0.8 because it does not rebuild the entire DOM.
 
     if (Session.get("tabs")) {
       $('#maintabs ' + Session.get("tabs") + "tab").tab("show");
     } else {
-      $('#maintabs a[data-toggle="tab"]:first').tab("show");
+      $('#maintabs a[data-toggle="tab"]:first').tab("show"); // On startup initalize first tab.
     }
-
   }
   
   // Live display of number of samples
