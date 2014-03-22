@@ -165,9 +165,15 @@ This device does not support motion.
 
 <template name="python">
 {{#markdown}}
-You can stream and process the motion data in real time. Use the following Python skeleton to get started.
+You can write your own code to process your motion data in real time.
 
-A sample has seven fields:
+##### Instructions
+
+Start with the following Python code which will connect to the stream of motion data transmitted by your phone. Copy the code to a file and execute it using python. Follow the instructions in the laptop and phone tabs to start capturing motion data. The code will print one line for each sample.
+
+The file has already been customized with your username and server so that it will connect to your stream as is. Modify the processing function as you wish.
+
+##### Sample fields
 
 * x, y, z are the linear accelerations (meters/sec^2)
 * a, b, c are the rotation rates around the x, y, and z axes respecively (degrees/sec *)
