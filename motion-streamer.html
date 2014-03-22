@@ -28,7 +28,11 @@
       </div>
       <br>
       {{#if has_username}}
-      {{> tabs}}
+      <ul class="nav nav-tabs" id="maintabs">
+        <li><a id="reviewtab" href="#review" data-toggle="tab">Laptop</a></li>
+        <li><a id="collecttab" href="#collect" data-toggle="tab">Phone</a></li>
+        <li><a id="pythontab" href="#python" data-toggle="tab">Stream</a></li>
+      </ul>
       <div class="tab-content">
         <div class="tab-pane" id="review">
           {{#if activetab "#review"}}
@@ -75,14 +79,6 @@ Sign in with same username on both phone and laptop.
     </div>
   </div>
   </div>
-</template>
-
-<template name="tabs">
-  <ul class="nav nav-tabs" id="maintabs">
-    <li><a id="reviewtab" href="#review" data-toggle="tab">Laptop</a></li>
-    <li><a id="collecttab" href="#collect" data-toggle="tab">Phone</a></li>
-    <li><a id="pythontab" href="#python" data-toggle="tab">Stream</a></li>
-  </ul>
 </template>
 
 <template name="nsamples">

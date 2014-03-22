@@ -91,7 +91,7 @@ if (Meteor.isClient) {
 
   // Navigation tab wiring
 
-  Template.tabs.rendered = function () {
+  Template.body.rendered = function () {
 
     // Handler to set tabs session variable whenever tab is shown
 
@@ -101,7 +101,7 @@ if (Meteor.isClient) {
 
     // Explicitly show tab content 
     // because the Bootstrap data-toggle mechanism doesn't work with Meteor
-    // because tab content is not rendered before the toggle is executed.
+    // because tab content is not propery rendered before the toggle is executed.
     // Maybe unnecessary with Meteor 0.8 because it does not rebuild the entire DOM.
 
     if (Session.get("tabs")) {
