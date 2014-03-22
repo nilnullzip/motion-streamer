@@ -191,6 +191,8 @@ if (Meteor.isClient) {
       s = s + '!'
       $('#statusModal').modal('show');
     }
+    if (Meteor.status()['reason']) s += " " + Meteor.status()['reason']
+    if (Meteor.status()['retryCount']) s += " (" + Meteor.status()['retryCount'] + ")"
     $('#statusModal #statusModalLabel').html("<span class='" + r + "'>Server status: " + s + "</span>");
     return new Handlebars.SafeString("<span class='" + r + "'>" + s + "</span>");
   }
