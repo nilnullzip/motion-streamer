@@ -230,7 +230,7 @@ if (Meteor.isClient) {
 
         device_motion_timout = 0;
 
-        var s = "Raw motion data:<br><br>";
+        var s = "";
 
         // Measure sample interval and display on page
 
@@ -257,7 +257,7 @@ if (Meteor.isClient) {
         if (!Template.recording.recording() || Session.get("tabs") != "#collect") {
           samples = [];
 
-          s += sprintf("Time: %f<br><br>", sample['t']);
+          s += sprintf("Timestamp: %f<br><br>", sample['t']);
           s += sprintf("Acc:  %6.2f %6.2f %6.2f<br>", sample['x'], sample['y'], sample['z']);
           if ( e.rotationRate ) {
           s += sprintf("Rot:  %6.1f %6.1f %6.1f<br>", sample['a'], sample['b'], sample['c']);

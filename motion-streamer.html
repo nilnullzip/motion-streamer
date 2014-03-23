@@ -134,7 +134,7 @@ Disable portrait/landscape auto rotate to minimize unnecssary processing load.
 Tape cardboard to the face of your phone to prevent random touches from affecting the page while phone is in your pocket.
 
 Ensure only one phone on this tab at a time, otherwise data will be simultaneously captured from multiple phones resulting in nonsense.
-<br><br>
+
 #####Device motion status
 <pre id="accxyz" class="muted">
 This device does not support motion.
@@ -172,13 +172,13 @@ The file has already been customized with your username and server so that it wi
 ##### Sample fields
 
 * x, y, z are the linear accelerations (meters/sec^2)
-* a, b, c are the rotation rates around the x, y, and z axes respecively (degrees/sec *)
+* a, b, c are the rotation rates around the x, y, and z axes
 * t is the timestamp for when sample was writen to the database (milliseconds)
 
 The timestamp is helpful to verify that the stream was captured uninterrupted. Also to verify that the phone is not overloaded. Note that the timestamp typically jitters around 100-200ms because of processing delays. However the samples are actually taken at a more uniform rate.
 
-(*) Maybe the rotation rate units are not standardized. IOS appears to use degrees/sec. But Android seems to use a much smaller scale, perhaps radians/sec.
-
+Not sure if the units for rotation rate are standardized. IOS appears to use degrees/sec. But Android seems to use a much lower scale, perhaps radians/sec.
+##### Python code
 {{/markdown}}
 <pre>
 #!/usr/bin/python
