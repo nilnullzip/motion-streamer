@@ -75,6 +75,7 @@ Sign in with same username on both phone and laptop.
       </div>
       {{/if}}
       <hr>
+      <div style="float:right">{{> timestamp}}</div>
       <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
     </div>
   </div>
@@ -233,4 +234,8 @@ def stream () :
 
 stream ()
 </pre>
+</template>
+
+<template name='timestamp'>
+{{timestamp}}
 </template>
