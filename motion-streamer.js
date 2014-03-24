@@ -200,13 +200,7 @@ if (Meteor.isClient) {
     return new Handlebars.SafeString("<span class='" + r + "'>" + s + "</span>");
   }
 
-  Deps.autorun(Template.status.status);
-
-//  var device_motion_timout = 0;
-
-//  $(Meteor.setInterval(function(){
-//    device_motion_timout++;
-//  }, 1000));
+  Deps.autorun(Template.status.status); // Not sure why this one is needed
 
   // At startup set up device motion event handler.
 
@@ -224,10 +218,6 @@ if (Meteor.isClient) {
  
   Meteor.startup(function () {
 
-//    Meteor.setTimeout(function (){
-//      Meteor.subscribe("timestamps");
-//    }, 5000);
-
     Accounts.ui.config({
       passwordSignupFields: 'USERNAME_ONLY'
     });
@@ -240,8 +230,6 @@ if (Meteor.isClient) {
       // Device motion event service routine!
             
       window.ondevicemotion = function(e) {
-
-//        device_motion_timout = 0;
 
         var s = "";
 
@@ -307,10 +295,7 @@ if (Meteor.isServer) {
 
   var set_recording = function(username, recording) {
     u = Meteor.users.findOne({username: username});
-    //console.log("set_recording: user ", u.username);
     recording_val = recording ? Date.now() : null;
-    //Meteor.users.update(Meteor.userId(), {$set: {'profile.recording': recording_val}});
-//    console.log("set_recording: recording_val =", recording_val)
     Meteor.users.update(u._id, {$set: {'profile.recording': recording_val}});
   };
 
