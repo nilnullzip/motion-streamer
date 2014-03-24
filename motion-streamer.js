@@ -51,10 +51,8 @@ if (Meteor.isClient) {
   Template.body.events({
     'click button#clear': function () {
       var filter = user_filter(get_username());
-      if (filter.username == undefined && !confirm("Really?")) {
-        return;
-      }      
       Meteor.call("delete_samples", filter);
+      set_recording(is_recording()); // update recording timestamp
     }
   });
 
@@ -160,10 +158,6 @@ if (Meteor.isClient) {
   // Set the recording state
 
   var set_recording = function(recording) {
-    if (recording && Counts.findOne() && Counts.findOne().count) {
-      alert("Please delete samples first.");
-      if (Meteor.user().username != "Juan") return;
-    }
     recording_val = recording ? Date.now() : null;
     Meteor.users.update(Meteor.userId(), {$set: {'profile.recording': recording_val}});
   }
@@ -176,7 +170,12 @@ if (Meteor.isClient) {
 
   Template.recording.events({
     'click button#startstop': function () {
-      set_recording(!Template.recording.recording());
+      var recording = is_recording();
+      if (!recording && Counts.findOne() && Counts.findOne().count) {
+        alert("Please delete samples first.");
+        if (Meteor.user().username != "Juan") return;
+      }
+      set_recording(!recording);
     }
   });
 
