@@ -5,7 +5,7 @@ Samples = new Meteor.Collection("samples"); // The sample collection
 Counts = new Meteor.Collection("counts");   // Non Mongo counts collection
 Timestamps = new Meteor.Collection("timestamps");
 
-var time_limit = 2 * 60;
+var time_limit = 60;
 
 // Helper to get current user name
 
@@ -419,7 +419,7 @@ Router.map(function () {
       var total_records = Samples.find({username: username}).count();
       var ndelete = 0;
       if (total_records > time_limit) ndelete = total_records - time_limit;
-      else if (total_records - nrecords_fetched > 10) ndelete = nrecords_fetched;
+//      else if (total_records - nrecords_fetched > 10) ndelete = nrecords_fetched;
       Meteor.call("delete_samples", {username: username}, ndelete);
 
     }
