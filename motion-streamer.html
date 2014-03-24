@@ -217,8 +217,7 @@ def stream () :
   url = 'http://' + server + '/json/' + username
   while True :
     # t asks for samples since that timestamp
-    # n limits the number of seconds returned
-    u = url + "?t=" + ("%d"%t) + "&n=10"
+    u = url + "?t=" + ("%d"%t)
     response = urllib2.urlopen(u)
     json_text = response.read()
     if (len(json_text)>2) :
