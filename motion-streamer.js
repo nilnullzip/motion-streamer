@@ -5,8 +5,8 @@ Samples = new Meteor.Collection("samples"); // The sample collection
 Counts = new Meteor.Collection("counts");   // Non Mongo counts collection
 Timestamps = new Meteor.Collection("timestamps");
 
-var time_limit = 10 * 60;
-//var time_limit = 20;
+//var time_limit = 10 * 60;
+var time_limit = 20;
 
 // Helper to get current user name
 
@@ -18,7 +18,6 @@ var get_username = function() {
 // Helper to formulate query
 
 var user_filter = function (username) {
-  //return username=="ALL" ? {} : {username: username==undefined ? "" : username};
   return {username: username==undefined ? "" : username};
 }
 
@@ -60,12 +59,22 @@ if (Meteor.isClient) {
     }
   });
 
+  // Server timestamp display for debugging purposes
+
   Template.timestamp.timestamp = function () {
     var ts = get_timestamp();
     if (!ts) return;
     return ts - Date.now();
   };
 
+  var get_timestamp = function () {
+    t = Timestamps.findOne();
+    if (!t) return 0;
+    return t.timestamp;
+  }
+
+  Meteor.subscribe("timestamps", 1);
+ 
   // Recent samples display
 
   var timestamps = [];
@@ -84,16 +93,11 @@ if (Meteor.isClient) {
       if (!timestamps.length) {
         timestamps.unshift(s["samples"][0]['t']);        
         timestamps.unshift(timestamps[0]);        
-        //timestamps.unshift(timestamps[0]);        
       } else if (timestamps[0] == s["samples"][19]['t']) {
-//        console.log("rececent samples: backing up saved timestamps: ", timestamps)
         timestamps[0] = timestamps[1];
-        //timestamps.unshift(timestamps[0]);
       } else {
-        //timestamps.unshift(timestamps[0]);
       }
       timestamps.unshift(timestamps[0]);
-//      console.log("rececent samples: timestamps: ", timestamps)
       r = _.map(s["samples"], format_sample );
       timestamps.pop();
       return r;
@@ -139,13 +143,7 @@ if (Meteor.isClient) {
   Template.nsamples.nsamples = function () {
     var s = Counts.findOne(); // This can return null during startup!
     if (!s) return "nsamples: Oops!";
-    var count = s.count;
-    if (count>time_limit) {
-//      set_recording(false); // Limit recording time.
-      //var filter = user_filter(get_username());
-      //Meteor.call("delete_samples", filter, 2);
-    }
-    return count;
+    return s.count;
   };
  
   var is_recording = function () {
@@ -168,30 +166,8 @@ if (Meteor.isClient) {
       if (Meteor.user().username != "Juan") return;
     }
     recording_val = recording ? Date.now() : null;
-    console.log("set_recording: recording_val =", recording_val)
     Meteor.users.update(Meteor.userId(), {$set: {'profile.recording': recording_val}});
-
-    reset_timeout(recording);
   }
-
-  // Timeout if no recording and reset record button
-
-  var timeout = null;
-  var reset_timeout = function(recording){
-    clearTimeout(timeout);
-//    return; // ***************** DEBUG *****************
-    if (!recording) {
-      return;
-    }
-//    timeout = Meteor.setTimeout(function(){
-//      set_recording(false);
-//    }, 10000)
-  }
-
-  Deps.autorun(function(){
-    var s = Samples.findOne(user_filter(get_username()), {sort: {created_at: -1}});
-    reset_timeout(true);
-  });
 
   // The recording button
 
@@ -226,11 +202,11 @@ if (Meteor.isClient) {
 
   Deps.autorun(Template.status.status);
 
-  var device_motion_timout = 0;
+//  var device_motion_timout = 0;
 
-  $(Meteor.setInterval(function(){
-    device_motion_timout++;
-  }, 1000));
+//  $(Meteor.setInterval(function(){
+//    device_motion_timout++;
+//  }, 1000));
 
   // At startup set up device motion event handler.
 
@@ -245,22 +221,6 @@ if (Meteor.isClient) {
     if (!username) return;
     Meteor.subscribe ("recent_samples", username);
   });
-
-//  var timestamp_diff;
-//  Deps.autorun(function () {
-//    t = get_timestamp;
-//    if (!t) return;
-//    timestamp_diff = t.timestamp - Date.now();
-//  })
- 
-  var get_timestamp = function () {
-    t = Timestamps.findOne();
-    if (!t) return 0;
-    return t.timestamp;
-  }
-
-
-  Meteor.subscribe("timestamps", 1);
  
   Meteor.startup(function () {
 
@@ -281,7 +241,7 @@ if (Meteor.isClient) {
             
       window.ondevicemotion = function(e) {
 
-        device_motion_timout = 0;
+//        device_motion_timout = 0;
 
         var s = "";
 
@@ -350,7 +310,7 @@ if (Meteor.isServer) {
     //console.log("set_recording: user ", u.username);
     recording_val = recording ? Date.now() : null;
     //Meteor.users.update(Meteor.userId(), {$set: {'profile.recording': recording_val}});
-    console.log("set_recording: recording_val =", recording_val)
+//    console.log("set_recording: recording_val =", recording_val)
     Meteor.users.update(u._id, {$set: {'profile.recording': recording_val}});
   };
 
@@ -364,22 +324,16 @@ if (Meteor.isServer) {
   Meteor.methods({
     // Because Meteor does not allow client to delete multiple documents
     delete_samples: function(filter, n) {
-      console.log("delete_samples: n =", n)
       if (n==undefined) {
         Samples.remove(filter);        
       } else if (n>0) {
         var s = Samples.find(filter, {sort: {created_at: 1}, limit: n});
-        console.log("delete_samples:  ", s.count());
         if (n<1) return;
         s.forEach(function(i){
           Samples.remove(i._id);
         });
       }
     },
-//    server_timestamp: function() {
-//      console.log("server_timestamp")
-//      return Date.now();
-//    }
   });
 
   Meteor.publish("counts", function (username) {
@@ -400,7 +354,6 @@ if (Meteor.isServer) {
     });
     var count = s.count();
     initializing = false;
-    //console.log("publish counts: " + username + " " + count);
     self.added("counts", username, {count: count});
     self.ready();
     self.onStop(function () {
@@ -410,7 +363,6 @@ if (Meteor.isServer) {
 
   Meteor.publish("recent_samples", function (username) {
     var s = Samples.find(user_filter(username), {sort: {created_at: -1}, limit: 1});
-    //console.log("recent_samples: " + username + " " + s.count());
     s.rewind();
     return s;
   });
@@ -420,10 +372,8 @@ if (Meteor.isServer) {
     self.added("timestamps", "0", {timestamp: Date.now()});
     Meteor.setInterval(function (){
       self.changed("timestamps", "0", {timestamp: Date.now()});
-      //console.log("publish timestamps CHANGE")
     }, 1000)
     self.ready();
-//    console.log("publish timestamps")
   });
 
   Meteor.startup(function () {
@@ -452,49 +402,43 @@ Router.map(function () {
       var username = this.params.username;
       // set recording, but not too frequently because changes to user record bog down browser
       var recording = get_recording(username);
-      console.log("json: username =", username)
-      console.log("json: get_recording() =", recording)
-      console.log("json: condition =", Date.now() > (recording + time_limit/2*1000))
       if (!recording || recording && Date.now() > recording + time_limit/2*1000) {
-        console.log("json: get_recording() 2 =", recording)
         set_recording(username, Date.now());
       }
-      //console.log("JSON: username: " + username);
-      //console.log("JSON: n: " + this.params.n);
       var filter = {username: username};
 
       var t = this.params.t;
       if (t != undefined) {
-        //console.log("JSON: from time: " + t)
         filter['created_at'] = {$gt : parseInt(t)};
       }
 
-      //console.log("JSON: query: " + JSON.stringify(filter));
-      var seconds = this.params.n || 0;
+      var seconds = 5; // Need at least 2 seconds to allow for occasional catchup
       var skip = 0; // Default skip nothing
-      if (seconds) {
-        var nrecords = Samples.find(filter).count();
-        seconds = Math.max(seconds, 5); // Need at least 2 seconds to allow for occasional catchup
-        skip = Math.max(0, nrecords-seconds);
-      }
-      var samples = Samples.find(filter, {sort: {created_at: 1}, skip: skip});
-      var nrecords_fetched = 0;
+      var nrecords = Samples.find(filter).count();
+      skip = Math.max(0, nrecords-seconds);
 
+      var samples = Samples.find(filter, {sort: {created_at: 1}, skip: skip});
+
+      // Get samples and form response
+
+      var nrecords_fetched = 0;
       var l = [];
       samples.forEach(function (s) {
         l = l.concat(s.samples);
         nrecords_fetched++;
       });
 
+      this.response.writeHead(200, {'Content-Type': 'application/json', 'Content-Disposition': 'attachment'});
+      this.response.end(JSON.stringify(l));
+
+      // Delete samples as we stream them
+
       var total_records = Samples.find({username: username}).count();
       var ndelete = 0;
       if (total_records > time_limit) ndelete = total_records - time_limit;
       else if (total_records - nrecords_fetched > 10) ndelete = nrecords_fetched;
-
       Meteor.call("delete_samples", {username: username}, ndelete);
 
-      this.response.writeHead(200, {'Content-Type': 'application/json', 'Content-Disposition': 'attachment'});
-      this.response.end(JSON.stringify(l));
     }
   });
 });
