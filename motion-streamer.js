@@ -327,11 +327,11 @@ if (Meteor.isServer) {
       if (n==undefined) {
         Samples.remove(filter);        
       } else if (n>0) {
-        var s = Samples.find(filter, {sort: {created_at: 1}, limit: n});
-        if (n<1) return;
-        s.forEach(function(i){
-          Samples.remove(i._id);
-        });
+        var ids = Samples.find(filter,{sort: {created_at: 1}, limit: n, fields: {_id: 1}}).fetch();
+        ids = ids.map(function(i){return i._id});
+        console.log("delete_samples: ", ids);
+        Samples.remove({_id: {'$in': ids}});
+        return
       }
     },
   });
