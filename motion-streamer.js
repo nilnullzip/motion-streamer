@@ -5,8 +5,7 @@ Samples = new Meteor.Collection("samples"); // The sample collection
 Counts = new Meteor.Collection("counts");   // Non Mongo counts collection
 Timestamps = new Meteor.Collection("timestamps");
 
-//var time_limit = 10 * 60;
-var time_limit = 20;
+var time_limit = 2 * 60;
 
 // Helper to get current user name
 
@@ -150,7 +149,7 @@ if (Meteor.isClient) {
     var u = Meteor.user();
     if (!u || !u.profile) return false;
     var ts = Timestamps.findOne();
-    if (!ts) return "";
+    if (!ts) return false;
     return ts.timestamp - u.profile.recording < time_limit*1000;
   }
 
