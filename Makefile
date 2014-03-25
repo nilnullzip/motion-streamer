@@ -9,3 +9,6 @@ mongo:
 
 deploy:
 	meteor deploy motion-streamer
+
+install:
+	mrt install
