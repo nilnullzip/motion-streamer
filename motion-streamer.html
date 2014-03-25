@@ -1,7 +1,7 @@
 <!-- Copyright 2014 Juan Pineda. See LICENSE (MIT) file. -->
 
 <head>
-  <title>Motion data capture.</title>
+  <title>Motion Streamer.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui">
   <!--
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +31,7 @@
       </div>
       <br>
       {{#if has_username}}
-        {{> body}}
+        {{> main}}
       {{else}}
       <div>
 {{#markdown}}
@@ -49,7 +49,7 @@ Sign in with same username on both phone and laptop.
   </div>
 </template>
 
-<template name='body'>
+<template name='main'>
       <ul class="nav nav-tabs" id="maintabs">
         <li><a id="reviewtab" href="#review" data-toggle="tab">Laptop</a></li>
         <li><a id="collecttab" href="#collect" data-toggle="tab">Phone</a></li>
@@ -116,8 +116,7 @@ Right click on the download button to specify a filename.
 Recording limited to {{time_limit}} seconds.
 #####Capture status
 {{/markdown}}
-<pre class="muted">
-delta  timestamp       x      y      z         a      b      c
+<pre class="muted">delta  timestamp       x      y      z         a      b      c
 -----  ---------      ---    ---    ---       ---    ---    ---
 {{#each recentsamples}}{{this}}<br>{{/each}}</pre>
   </div>

@@ -6,3 +6,6 @@ stream:
 
 mongo:
 	meteor mongo
+
+deploy:
+	meteor deploy motion-streamer

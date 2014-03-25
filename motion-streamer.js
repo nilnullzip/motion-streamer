@@ -35,11 +35,11 @@ if (Meteor.isClient) {
 
   // Body functions
 
-  Template.body.activetab = function (t) {
+  Template.main.activetab = function (t) {
     return (t == Session.get("tabs")) || (t == "#review" && !Session.get("tabs"));
   }
 
-  Template.body.username = function () {
+  Template.main.username = function () {
     return get_username();
   }
 
@@ -48,7 +48,7 @@ if (Meteor.isClient) {
     return username != "" && username != undefined;
   }
 
-  Template.body.events({
+  Template.main.events({
     'click button#clear': function () {
       var filter = user_filter(get_username());
       Meteor.call("delete_samples", filter);
@@ -117,30 +117,20 @@ if (Meteor.isClient) {
 
   render_count = 0;
 
-  Template.body.rendered = function () {
-    console.log("rendered")
-    var foo = $('#reviewtab')
-    console.log("rendered ", foo)
-    foo.click(function(){console.log("foo")});
-    render_count = render_count + 1;
+  Template.main.rendered = function () {
 
     // Handler to set tabs session variable whenever tab is shown
 
     $('#maintabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      console.log("rendered: setting tabs")
       Session.set("tabs", e.target.hash);
     });
-    $('#reviewtab').click()
-    console.log("rendered: #reviewtab htm;: ", $('#reviewtab').html())
-    console.log("rendered: #reviewtab: ", $('#reviewtab'))
 
     // Explicitly show tab content 
     // because the Bootstrap data-toggle mechanism doesn't work with Meteor
     // because tab content is not propery rendered before the toggle is executed.
     // Maybe unnecessary with Meteor 0.8 because it does not rebuild the entire DOM.
 
-    if (Session.get("tabs")) {
-      console.log("rendered: getting tabs")
+    if (false && Session.get("tabs")) {
       $('#maintabs ' + Session.get("tabs") + "tab").tab("show");
     } else {
       $('#maintabs a[data-toggle="tab"]:first').tab("show"); // On startup initalize first tab.
