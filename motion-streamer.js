@@ -226,13 +226,13 @@ if (Meteor.isClient) {
 
     var taborder = ['#review', '#collect', '#python'];
 
-    $('body').hammer().on('swiperight', function (e){
+    $('body').hammer({stop_browser_behavior: false}).on('swiperight', function (e){
       var i = taborder.indexOf(Session.get('tabs')) + 1;
       i = Math.min(i, taborder.length-1);
       $('#maintabs ' + taborder[i] +'tab').tab('show');
     });
 
-    $('body').hammer().on('swipeleft', function (e){
+    $('body').hammer({stop_browser_behavior: false}).on('swipeleft', function (e){
       var i = taborder.indexOf(Session.get('tabs')) - 1;
       i = Math.max(i, 0);
       $('#maintabs ' + taborder[i] +'tab').tab('show');
