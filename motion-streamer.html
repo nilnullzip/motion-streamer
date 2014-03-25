@@ -2,10 +2,10 @@
 
 <head>
   <title>Motion data capture.</title>
-  <!--
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui">
-  -->
+  <!--
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  -->
 </head>
 
 <body>
@@ -21,16 +21,35 @@
 </div>
 </body>
 
-<template name="body">
+<template name="outer">
   <div class="container">
   <div id="maindiv" class="row" >
     <div class="span12">
       <div class="text-right">
         <br>
-        {{loginButtons align="right"}}
+        {{> loginButtons align="right"}}
       </div>
       <br>
       {{#if has_username}}
+        {{> body}}
+      {{else}}
+      <div>
+{{#markdown}}
+Use this app to capture motion data from your phone onto your laptop for download or streaming.
+
+Sign in with same username on both phone and laptop.
+{{/markdown}}
+      </div>
+      {{/if}}
+      <hr>
+      <div style="float:right">{{> timestamp}}</div>
+      <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
+    </div>
+  </div>
+  </div>
+</template>
+
+<template name='body'>
       <ul class="nav nav-tabs" id="maintabs">
         <li><a id="reviewtab" href="#review" data-toggle="tab">Laptop</a></li>
         <li><a id="collecttab" href="#collect" data-toggle="tab">Phone</a></li>
@@ -50,7 +69,7 @@
           <button type="button" id="clear" class="btn btn-danger">Delete</button>
           <br><br>
           {{> nsamples}}
-          </br><br>
+          <br><br>
           {{> recentdata}}
           {{/if}}
         </div>
@@ -65,34 +84,19 @@
           {{/if}}
         </div>
         <div class="tab-pane" id="python">
+          {{#if activetab "#python"}}
           {{> python}}
+          {{/if}}
         </div>
       </div>
-      {{else}}
-      <div>
-{{#markdown}}
-Use this app to capture motion data from your phone onto your laptop for download or streaming.
-
-Sign in with same username on both phone and laptop.
-{{/markdown}}
-      </div>
-      {{/if}}
-      <hr>
-      <div style="float:right">{{> timestamp}}</div>
-      <a href="http://github.com/nilnullzip">Created by Juan Pineda</a>
-    </div>
-  </div>
-  </div>
 </template>
 
 <template name="nsamples">
   {{#if recording}}
-  <span style="color:red">
+  <span style="color:red"><strong>Seconds recorded: {{nsamples}}</strong></span>
   {{else}}
-  <span>
+  <span><strong>Seconds recorded: {{nsamples}}</strong></span>
   {{/if}}
-    <strong>Seconds recorded: {{nsamples}}</strong>
-  </span>
 </template>
 
 <template name="recording">
@@ -101,7 +105,6 @@ Sign in with same username on both phone and laptop.
   {{else}}
     <button type="button" id="startstop" class="btn btn-success">Record</button>
   {{/if}}
-  </button>
 </template>
 
 <template name="recentdata">

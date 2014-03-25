@@ -43,7 +43,7 @@ if (Meteor.isClient) {
     return get_username();
   }
 
-  Template.body.has_username = function () {
+  Template.outer.has_username = function () {
     var username = get_username();
     return username != "" && username != undefined;
   }
@@ -115,13 +115,24 @@ if (Meteor.isClient) {
 
   // Navigation tab wiring
 
+  render_count = 0;
+
   Template.body.rendered = function () {
+    console.log("rendered")
+    var foo = $('#reviewtab')
+    console.log("rendered ", foo)
+    foo.click(function(){console.log("foo")});
+    render_count = render_count + 1;
 
     // Handler to set tabs session variable whenever tab is shown
 
     $('#maintabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      console.log("rendered: setting tabs")
       Session.set("tabs", e.target.hash);
     });
+    $('#reviewtab').click()
+    console.log("rendered: #reviewtab htm;: ", $('#reviewtab').html())
+    console.log("rendered: #reviewtab: ", $('#reviewtab'))
 
     // Explicitly show tab content 
     // because the Bootstrap data-toggle mechanism doesn't work with Meteor
@@ -129,6 +140,7 @@ if (Meteor.isClient) {
     // Maybe unnecessary with Meteor 0.8 because it does not rebuild the entire DOM.
 
     if (Session.get("tabs")) {
+      console.log("rendered: getting tabs")
       $('#maintabs ' + Session.get("tabs") + "tab").tab("show");
     } else {
       $('#maintabs a[data-toggle="tab"]:first').tab("show"); // On startup initalize first tab.
@@ -219,6 +231,24 @@ if (Meteor.isClient) {
     Accounts.ui.config({
       passwordSignupFields: 'USERNAME_ONLY'
     });
+
+    // Touch events
+
+    var taborder = ['#review', '#collect', '#python'];
+
+    $('body').hammer().on('swiperight', function (e){
+      var i = taborder.indexOf(Session.get('tabs')) + 1;
+      i = Math.min(i, taborder.length-1);
+      $('#maintabs ' + taborder[i] +'tab').tab('show');
+    });
+
+    $('body').hammer().on('swipeleft', function (e){
+      var i = taborder.indexOf(Session.get('tabs')) - 1;
+      i = Math.max(i, 0);
+      $('#maintabs ' + taborder[i] +'tab').tab('show');
+    });
+
+    // Device motion handler
 
     var timestamp = 0;
     var samples = [];
@@ -370,7 +400,7 @@ Router.configure({
 });
 
 Router.map(function () {
-  this.route('body', {
+  this.route('outer', {
     path: '/'
   });
 });
