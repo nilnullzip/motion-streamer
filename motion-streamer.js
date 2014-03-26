@@ -225,7 +225,7 @@ if (Meteor.isClient) {
     // Touch events
 
     var taborder = ['#review', '#collect', '#python'];
-
+/*
     $('body').hammer({stop_browser_behavior: false}).on('swiperight', function (e){
       var i = taborder.indexOf(Session.get('tabs')) + 1;
       i = Math.min(i, taborder.length-1);
@@ -237,7 +237,7 @@ if (Meteor.isClient) {
       i = Math.max(i, 0);
       $('#maintabs ' + taborder[i] +'tab').tab('show');
     });
-
+*/
     // Device motion handler
 
     var timestamp = 0;
