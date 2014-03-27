@@ -9,7 +9,7 @@ import sys
 
 username = "Demo"
 #server = "truecar-hack.meteor.com"
-server = "localhost:3000"
+server = "http://localhost:3000"
 
 # Process a sample -- replace with your processing function
 
@@ -31,10 +31,10 @@ def process_sample (s) :
 
 def stream () :
 	t = 0
-	url = 'http://' + server + '/json/' + username
+	url = server + '/json/' + username
 	while True :
 		# t asks for samples since that timestamp
-		u = url + "?t=" + ("%d"%t)
+		u = url + "?t=" + ("%d"%t) + "&n=5"
 		response = urllib2.urlopen(u)
 		json_text = response.read()
 		if (len(json_text)>2) :
