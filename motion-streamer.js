@@ -76,8 +76,9 @@ if (Meteor.isClient) {
 
   var timestamps = [];
   var format_sample = function (s) {
-    r = sprintf("%4d %d  %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", 
+    r = sprintf("%4d %d  %6.2f %6.2f %6.2f   %6.2f %6.2f %6.2f   %6.1f %6.1f %6.1f", 
       s['t']-timestamps[0], s['t'], 
+      s['X'], s['Y'], s['Z'],
       s['x'], s['y'], s['z'],
       s['a'], s['b'], s['c']);
     timestamps[0] = s['t'];
@@ -241,9 +242,14 @@ if (Meteor.isClient) {
         // Create the sample
 
         var sample = {}
-        sample.x = e.accelerationIncludingGravity.x;
-        sample.y = e.accelerationIncludingGravity.y;
-        sample.z = e.accelerationIncludingGravity.z;
+        sample.X = e.accelerationIncludingGravity.x;
+        sample.Y = e.accelerationIncludingGravity.y;
+        sample.Z = e.accelerationIncludingGravity.z;
+        if (e.acceleration) {
+          sample.x = e.acceleration.x;
+          sample.y = e.acceleration.y;
+          sample.z = e.acceleration.z;
+        }
         if ( e.rotationRate ) {
           sample.a = e.rotationRate.alpha;
           sample.b = e.rotationRate.beta;
@@ -257,9 +263,12 @@ if (Meteor.isClient) {
           samples = [];
 
           s += sprintf("Timestamp: %f<br><br>", sample['t']);
-          s += sprintf("Acc:  %6.2f %6.2f %6.2f<br>", sample['x'], sample['y'], sample['z']);
+          s += sprintf("Acc:   %6.2f %6.2f %6.2f<br>", sample['X'], sample['Y'], sample['Z']);
+          if ( e.acceleration ) {
+          s += sprintf("Acc-g: %6.2f %6.2f %6.2f<br>", sample['x'], sample['y'], sample['z']);
+          }
           if ( e.rotationRate ) {
-          s += sprintf("Rot:  %6.1f %6.1f %6.1f<br>", sample['a'], sample['b'], sample['c']);
+          s += sprintf("Rot:   %6.1f %6.1f %6.1f<br>", sample['a'], sample['b'], sample['c']);
           }
 
           $("#accxyz").html(s);
