@@ -1,6 +1,7 @@
 {
   "packages": {
     "iron-router": {},
-    "hammer": {}
+    "hammer": {},
+    "blaze-layout": {}
   }
 }
