@@ -395,6 +395,7 @@ Router.map(function () {
       }
 
       var seconds = 5; // Need at least 2 seconds to allow for occasional catchup
+      if (this.params.n == undefined) seconds = time_limit;
       var skip = 0; // Default skip nothing
       var nrecords = Samples.find(filter).count();
       skip = Math.max(0, nrecords-seconds);
