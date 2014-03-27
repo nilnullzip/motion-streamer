@@ -23,8 +23,8 @@ def process_sample (s) :
 		print "Discontinuity %d ms" % delta
 	elif delta > 200 :
 		print "Delayed"
-	print '%3d %d %6.2f %6.2f %6.2f  %6.2f %6.2f %6.2f' % \
-		(delta, s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c'])
+	print '%3d %d %6.2f %6.2f %6.2f  %6.2f %6.2f %6.2f  %6.2f %6.2f %6.2f' % \
+		(delta, s['t'], s['X'], s['Y'], s['Z'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c'])
 	last_t = s['t']
 
 # Stream data from server

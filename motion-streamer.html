@@ -177,7 +177,8 @@ The file has already been customized with your username and server so that it wi
 
 ##### Sample fields
 
-* x, y, z are the linear accelerations (meters/sec^2)
+* X, Y, Z are the linear accelerations (meters/sec^2)
+* x, y, z are the linear accelerations, but with gravity removed (meters/sec^2)
 * a, b, c are the rotation rates around the x, y, and z axes
 * t is the timestamp for when sample was writen to the database (milliseconds)
 
@@ -211,8 +212,8 @@ def process_sample (s) :
     print "Discontinuity %d ms" % delta
   elif delta > 200 :
     print "Delayed"
-  print '%3d %d %6.2f %6.2f %6.2f  %6.2f %6.2f %6.2f' % \
-    (delta, s['t'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c'])
+  print '%3d %d %6.2f %6.2f %6.2f  %6.2f %6.2f %6.2f  %6.2f %6.2f %6.2f' % \
+    (delta, s['t'], s['X'], s['Y'], s['Z'], s['x'], s['y'], s['z'], s['a'], s['b'], s['c'])
   last_t = s['t']
 
 # Stream data from server
