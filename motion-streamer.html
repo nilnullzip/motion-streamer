@@ -219,7 +219,7 @@ def process_sample (s) :
 
 def stream () :
   t = 0
-  url = 'http://' + server + '/json/' + username
+  url = server + '/json/' + username
   while True :
     # t asks for samples since that timestamp
     u = url + "?t=" + ("%d"%t)
